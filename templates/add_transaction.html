@@ -2,59 +2,80 @@
 
 {% block title %}Add Transaction - Finance Tracker{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Minimal CSS for a modern, soft feel */
+    .form-control, .form-select { border-radius: 8px; border: 1px solid #e0e0e0; padding: 0.6rem 1rem; }
+    .form-control:focus { border-color: #0d6efd; box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1); }
+    .card { border-radius: 16px; border: none; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Add Transaction</h4>
-            </div>
-            <div class="card-body">
+<div class="container py-2">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm p-4">
                 <form method="POST" action="{{ url_for('main.add_transaction') }}">
+                    <p style="background-color: #114696;color:aliceblue;padding :5px; border-radius:5px;">Fill in the details to record your finance.</p> 
+                    <div class="mb-4">
+    <label class="form-label fw-bold small text-muted text-uppercase">Transaction Type</label>
+    <div class="d-flex gap-3">
+        <input type="radio" class="btn-check" name="type" id="income" value="income" autocomplete="off" required>
+        <label class="btn btn-outline-success w-100 py-2 fw-semibold shadow-sm" for="income">
+            <i class="bi bi-plus-lg me-1"></i> Income
+        </label>
+
+        <input type="radio" class="btn-check" name="type" id="expense" value="expense" autocomplete="off">
+        <label class="btn btn-outline-danger w-100 py-2 fw-semibold shadow-sm" for="expense">
+            <i class="bi bi-dash-lg me-1"></i> Expense
+        </label>
+    </div>
+</div>
+
                     <div class="mb-3">
-                        <label for="type" class="form-label">Type <span class="text-danger">*</span></label>
-                        <select class="form-select" id="type" name="type" required>
-                            <option value="">Select type</option>
-                            <option value="income">Income</option>
-                            <option value="expense">Expense</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="category_id" class="form-label">Category <span class="text-danger">*</span></label>
-                        <select class="form-select" id="category_id" name="category_id" required>
-                            <option value="">Select category</option>
+                        <label class="form-label fw-semibold small text-muted">CATEGORY</label>
+                        <select class="form-select bg-light" name="category_id" required>
+                            <option value="" disabled selected>Choose...</option>
                             {% for category in categories %}
                             <option value="{{ category.id }}">{{ category.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label for="amount" class="form-label">Amount <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text">Rs</span>
-                            <input type="number" step="0.01" min="0.01" class="form-control" 
-                                   id="amount" name="amount" required>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-7">
+                            <label class="form-label fw-semibold small text-muted">AMOUNT</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">Rs</span>
+                                <input type="number" step="0.01" class="form-control" name="amount" placeholder="0.00" required>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold small text-muted">DATE</label>
+                            <input type="date" class="form-control" id="date" name="date" required>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="date" class="form-label">Date <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control" id="date" name="date" required>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold small text-muted">DESCRIPTION</label>
+                        <textarea class="form-control" name="description" rows="2" placeholder="Optional notes..."></textarea>
                     </div>
-                    <script>
-                        document.getElementById('date').valueAsDate = new Date();
-                    </script>
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
-                    </div>
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Add Transaction</button>
-                        <a href="{{ url_for('main.transactions') }}" class="btn btn-secondary">Cancel</a>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
+                        <i class="bi bi-check2-circle me-1"></i> Save Record
+                    </button>
+                    
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('main.transactions') }}" class="text-decoration-none text-muted small">Go back to history</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
+<script>
+    document.getElementById('date').valueAsDate = new Date();
+</script>
+{% endblock %}

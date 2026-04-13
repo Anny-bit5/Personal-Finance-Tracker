@@ -1,0 +1,255 @@
+body {
+    background-color: #1864b6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.3rem;
+    transition: transform 0.3s ease;
+    text-decoration: none !important;
+}
+
+.navbar-brand:hover {
+    transform: translateY(-2px);
+}
+
+.navbar-brand .brand-text {
+    background: linear-gradient(90deg, #fff 0%, #e0f2ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.navbar-brand:hover .brand-text {
+    background: linear-gradient(90deg, #fff 0%, #b3d9ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Money Logo Animation */
+
+.money-logo {
+    display: inline-block;
+    animation: float 3s ease-in-out infinite;
+}
+
+.money-icon {
+    color: var(--gold);
+    font-size: 1.6rem;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5));
+    transition: transform 0.4s ease;
+}
+
+.navbar-brand:hover .money-icon {
+    transform: rotate(20deg) scale(1.15);
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 1));
+}
+
+.money-circle {
+    animation: coinSpin 4s ease-in-out infinite;
+    transform-origin: center;
+}
+
+
+.rs-text {
+    animation: textFade 2s ease-in-out infinite;
+    font-family: 'Arial', sans-serif;
+}
+
+.glow-circle {
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+.shine-overlay {
+    animation: shineRotate 3s linear infinite;
+    transform-origin: center;
+}
+
+.navbar-brand:hover .money-circle {
+    animation: coinSpin 1s ease-in-out infinite, coinBounce 0.6s ease-in-out;
+}
+
+.navbar-brand:hover .rs-text {
+    animation: textFade 0.8s ease-in-out infinite;
+    transform: scale(1.1);
+}
+
+/* Float Animation */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Coin Spin Animation */
+@keyframes coinSpin {
+    0%, 100% {
+        transform: rotateY(0deg);
+    }
+    25% {
+        transform: rotateY(90deg);
+    }
+    50% {
+        transform: rotateY(180deg);
+    }
+    75% {
+        transform: rotateY(270deg);
+    }
+}
+
+/* Symbol Pulse Animation */
+@keyframes symbolPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+}
+
+/* Shine Rotate Animation */
+@keyframes shineRotate {
+    0% {
+        transform: rotate(0deg);
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.6;
+    }
+    100% {
+        transform: rotate(360deg);
+        opacity: 0.3;
+    }
+}
+
+/* Coin Bounce on Hover */
+@keyframes coinBounce {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-8px) scale(1.1);
+    }
+}
+
+/* Text Fade Animation */
+@keyframes textFade {
+    0%, 100% {
+        opacity: 0.9;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Glow Pulse Animation */
+@keyframes glowPulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(1.1);
+    }
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 2px solid #e9ecef;
+    font-weight: 600;
+}
+
+.stat-card {
+    border-radius: 10px;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.btn {
+    border-radius: 5px;
+}
+
+.form-control, .form-select {
+    border-radius: 5px;
+}
+
+.alert {
+    border-radius: 5px;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.shadow {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Loading spinner */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.15em;
+}
+
+/* Username styling */
+.navbar-nav .nav-link.dropdown-toggle {
+    color: rgba(255, 255, 255, 0.9) !important;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link.dropdown-toggle:hover {
+    color: #fff !important;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+.navbar-nav .nav-link.dropdown-toggle svg {
+    transition: transform 0.3s ease;
+}
+
+.navbar-nav .nav-link.dropdown-toggle:hover svg {
+    transform: scale(1.1);
+}
+
+.navbar-nav .nav-link.dropdown-toggle span {
+    letter-spacing: 0.5px;
+}
+

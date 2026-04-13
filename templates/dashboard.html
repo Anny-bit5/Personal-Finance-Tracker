@@ -5,160 +5,133 @@
 {% block extra_css %}
 <style>
     .stat-card {
-        border-left: 4px solid;
-        transition: transform 0.2s;
+
+        border-radius: 12px;
+        transition: all 0.3s ease;
     }
     .stat-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-8px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
     }
-    .income-card { border-left-color: #28a745; }
-    .expense-card { border-left-color: #dc3545; }
-    .balance-card { border-left-color: #007bff; }
-    .prediction-card { border-left-color: #ffc107; }
+    .icon-shape {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin-bottom: 1rem;
+    }
+    .bg-income { background-color: #d1e7dd; color: #198754; }
+    .bg-expense { background-color: #f8d7da; color: #dc3545; }
+    .bg-balance { background-color: #cfe2ff; color: #0d6efd; }
+    .bg-predict { background-color: #fff3cd; color: #856404; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-md-3 mb-3">
-        <div class="card stat-card income-card shadow-sm h-100">
-            <div class="card-body">
-                <h6 class="text-muted mb-2">Total Income</h6>
-                <h3 class="text-success mb-0">Rs{{ "%.2f"|format(current_month.income) }}</h3>
-                <small class="text-muted">
-                    {% if prev_month.income > 0 %}
-                        {% set change = ((current_month.income - prev_month.income) / prev_month.income * 100) %}
-                        {% if change > 0 %}
-                            <i class="bi bi-arrow-up text-success"></i> {{ "%.1f"|format(change) }}%
-                        {% else %}
-                            <i class="bi bi-arrow-down text-danger"></i> {{ "%.1f"|format(change|abs) }}%
-                        {% endif %}
-                    {% endif %}
-                </small>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3 mb-3">
-        <div class="card stat-card expense-card shadow-sm h-100">
-            <div class="card-body">
-                <h6 class="text-muted mb-2">Total Expenses</h6>
-                <h3 class="text-danger mb-0">Rs{{ "%.2f"|format(current_month.expense) }}</h3>
-                <small class="text-muted">
-                    {% if prev_month.expense > 0 %}
-                        {% set change = ((current_month.expense - prev_month.expense) / prev_month.expense * 100) %}
-                        {% if change > 0 %}
-                            <i class="bi bi-arrow-up text-danger"></i> {{ "%.1f"|format(change) }}%
-                        {% else %}
-                            <i class="bi bi-arrow-down text-success"></i> {{ "%.1f"|format(change|abs) }}%
-                        {% endif %}
-                    {% endif %}
-                </small>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3 mb-3">
-        <div class="card stat-card balance-card shadow-sm h-100">
-            <div class="card-body">
-                <h6 class="text-muted mb-2">Balance</h6>
-                <h3 class="{% if current_month.balance >= 0 %}text-primary{% else %}text-danger{% endif %} mb-0">
-                    Rs{{ "%.2f"|format(current_month.balance) }}
-                </h3>
-                <small class="text-muted">{{ current_month.transactions }} transactions</small>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3 mb-3">
-        <div class="card stat-card prediction-card shadow-sm h-100">
-            <div class="card-body">
-                <h6 class="text-muted mb-2">Next Month Prediction</h6>
-                {% if prediction.prediction %}
-                    <h3 class="text-warning mb-0">Rs{{ "%.2f"|format(prediction.prediction) }}</h3>
-                    <small class="text-muted">
-                        <span class="badge bg-{% if prediction.confidence == 'high' %}success{% elif prediction.confidence == 'medium' %}warning{% else %}secondary{% endif %}">
-                            {{ prediction.confidence|title }} confidence
-                        </span>
+<div class="container-fluid py-4">
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card shadow-sm h-100 p-3">
+                <div class="icon-shape bg-income"><i class="bi bi-wallet2 fs-4"></i></div>
+               <h6 class="text-muted small text-uppercase fw-bold">Total Income</h6>
+                <h3 class="fw-bold mb-0">Rs {{ "%.0f"|format(current_month.income) }}</h3>
+                {% if prev_month.income > 0 %}
+                    {% set change = ((current_month.income - prev_month.income) / prev_month.income * 100) %}
+                    <small class="{{ 'text-success' if change >= 0 else 'text-danger' }} fw-bold">
+                        <i class="bi bi-arrow-{{ 'up' if change >= 0 else 'down' }}"></i> {{ "%.1f"|format(change|abs) }}%
                     </small>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card shadow-sm h-100 p-3">
+                <div class="icon-shape bg-expense"><i class="bi bi-cart-dash fs-4"></i></div>
+                <h6 class="text-muted small text-uppercase fw-bold">Total Expenses</h6>
+                <h3 class="fw-bold mb-0">Rs {{ "%.0f"|format(current_month.expense) }}</h3>
+                {% if prev_month.expense > 0 %}
+                    {% set change = ((current_month.expense - prev_month.expense) / prev_month.expense * 100) %}
+                    <small class="{{ 'text-danger' if change >= 0 else 'text-success' }} fw-bold">
+                        <i class="bi bi-arrow-{{ 'up' if change >= 0 else 'down' }}"></i> {{ "%.1f"|format(change|abs) }}%
+                    </small>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card shadow-sm h-100 p-3">
+                <div class="icon-shape bg-balance"><i class="bi bi-bank fs-4"></i></div>
+                <h6 class="text-muted small text-uppercase fw-bold">Current Balance</h6>
+                <h3 class="fw-bold mb-0 text-primary">Rs {{ "%.0f"|format(current_month.balance) }}</h3>
+                <small class="text-muted">{{ current_month.transactions }} active logs</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card shadow-sm h-100 p-3">
+                <div class="icon-shape bg-predict"><i class="bi bi-magic fs-4"></i></div>
+                <h6 class="text-muted small text-uppercase fw-bold">Next Month Aim</h6>
+                {% if prediction.prediction %}
+                    <h3 class="fw-bold mb-1 text-warning">Rs {{ "%.0f"|format(prediction.prediction) }}</h3>
+                    <span class="badge rounded-pill bg-dark" style="width: fit-content;">{{ prediction.confidence|title }} Confidence</span>
                 {% else %}
-                    <p class="text-muted mb-0 small">{{ prediction.message }}</p>
+                    <p class="text-muted small mb-0">{{ prediction.message }}</p>
                 {% endif %}
             </div>
         </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="col-md-6 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Expense by Category</h5>
-            </div>
-            <div class="card-body">
-                {% if category_breakdown %}
+    <div class="row g-4 mb-4">
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white fw-bold"><i class="bi bi-pie-chart-fill me-2"></i>Spending Split</div>
+                <div class="card-body">
                     <div id="categoryChart"></div>
-                {% else %}
-                    <p class="text-muted text-center">No expense data available</p>
-                {% endif %}
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-6 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Expense Trend (6 Months)</h5>
-            </div>
-            <div class="card-body">
-                {% if trend_values %}
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white fw-bold"><i class="bi bi-graph-up-arrow me-2"></i>Expense History</div>
+                <div class="card-body">
                     <div id="trendChart"></div>
-                {% else %}
-                    <p class="text-muted text-center">No trend data available</p>
-                {% endif %}
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Transactions</h5>
-                <a href="{{ url_for('main.transactions') }}" class="btn btn-sm btn-outline-primary">View All</a>
-            </div>
-            <div class="card-body">
-                {% if recent_transactions %}
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Type</th>
-                                    <th>Category</th>
-                                    <th>Amount</th>
-                                    <th>Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for transaction in recent_transactions %}
-                                <tr>
-                                    <td>{{ transaction.date.strftime('%Y-%m-%d') }}</td>
-                                    <td>
-                                        <span class="badge bg-{% if transaction.type == 'income' %}success{% else %}danger{% endif %}">
-                                            {{ transaction.type|title }}
-                                        </span>
-                                    </td>
-                                    <td>{{ transaction.category.name }}</td>
-                                    <td class="{% if transaction.type == 'income' %}text-success{% else %}text-danger{% endif %}">
-                                        Rs{{ "%.2f"|format(transaction.amount) }}
-                                    </td>
-                                    <td>{{ transaction.description or '-' }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <p class="text-muted text-center">No transactions yet. <a href="{{ url_for('main.add_transaction') }}">Add your first transaction</a></p>
-                {% endif %}
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-list-ul me-2"></i>Recent Activity</h5>
+            <a href="{{ url_for('main.transactions') }}" class="btn btn-sm btn-primary px-3">View All</a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Date</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th class="text-end pe-4">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in recent_transactions %}
+                        <tr>
+                            <td class="ps-4">{{ transaction.date.strftime('%d %b, %Y') }}</td>
+                            <td>
+                                <span class="badge rounded-pill bg-light text-dark border">
+                                    {{ transaction.category.name }}
+                                </span>
+                            </td>
+                            <td class="text-muted small">{{ transaction.description or '-' }}</td>
+                            <td class="text-end pe-4 fw-bold {{ 'text-success' if transaction.type == 'income' else 'text-danger' }}">
+                                {{ '+' if transaction.type == 'income' else '-' }} Rs{{ "%.2f"|format(transaction.amount) }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -167,63 +140,34 @@
 
 {% block extra_js %}
 <script>
-    // Category Pie Chart
-    {% if category_labels and category_labels|length > 0 %}
-    var categoryData = {
-        labels: {{ category_labels|tojson }},
-        values: {{ category_values|tojson }}
-    };
-    
-    var categoryTrace = {
-        labels: categoryData.labels,
-        values: categoryData.values,
-        type: 'pie',
-        hole: 0.4,
-        marker: {
-            colors: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF']
-        }
-    };
-    
-    var categoryLayout = {
-        title: '',
+    // Styling the Plotly Charts to match the new clean look
+    const chartLayout = {
         height: 300,
-        margin: {l: 20, r: 20, t: 20, b: 20}
+        margin: {l: 30, r: 30, t: 10, b: 30},
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { family: 'Inter, sans-serif' }
     };
-    
-    Plotly.newPlot('categoryChart', [categoryTrace], categoryLayout);
-    {% else %}
-    document.getElementById('categoryChart').innerHTML = '<p class="text-muted text-center py-5">No expense data available</p>';
+
+    {% if category_labels %}
+    Plotly.newPlot('categoryChart', [{
+        labels: {{ category_labels|tojson }},
+        values: {{ category_values|tojson }},
+        type: 'pie',
+        hole: 0.6,
+        marker: { colors: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'] }
+    }], chartLayout);
     {% endif %}
-    
-    // Trend Line Chart
-    {% if trend_values and trend_values|length > 0 %}
-    var trendData = {
-        labels: {{ trend_labels|tojson }},
-        values: {{ trend_values|tojson }}
-    };
-    
-    var trendTrace = {
-        x: trendData.labels,
-        y: trendData.values,
+
+    {% if trend_values %}
+    Plotly.newPlot('trendChart', [{
+        x: {{ trend_labels|tojson }},
+        y: {{ trend_values|tojson }},
         type: 'scatter',
         mode: 'lines+markers',
-        name: 'Expenses',
-        line: {color: '#dc3545', width: 2},
-        marker: {size: 8}
-    };
-    
-    var trendLayout = {
-        title: '',
-        height: 300,
-        xaxis: {title: 'Month'},
-        yaxis: {title: 'Amount (Rs)'},
-        margin: {l: 50, r: 20, t: 20, b: 50}
-    };
-    
-    Plotly.newPlot('trendChart', [trendTrace], trendLayout);
-    {% else %}
-    document.getElementById('trendChart').innerHTML = '<p class="text-muted text-center py-5">No trend data available</p>';
+        line: { shape: 'spline', color: '#4e73df', width: 3 },
+        marker: { size: 8, color: '#4e73df' }
+    }], chartLayout);
     {% endif %}
 </script>
 {% endblock %}
-
