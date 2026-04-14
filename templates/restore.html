@@ -4,25 +4,25 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-6">
+    <div class="col-md-5 p-3">
         <div class="card shadow-sm">
             <div class="card-header">
                 <h4 class="mb-0"><i class="bi bi-upload"></i> Restore Backup</h4>
             </div>
-            <div class="card-body">
-                <div class="alert alert-info">
+            <div class="card-body ">
+                <div class="">
                     <i class="bi bi-info-circle"></i> 
                     Select a backup JSON file to restore your transactions. 
                     Duplicate transactions will be skipped.
                 </div>
-                <form method="POST" action="{{ url_for('main.restore') }}" enctype="multipart/form-data">
+                <form style="padding:5px;margin-bottom: 6px;" method="POST" action="{{ url_for('main.restore') }}" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="backup_file" class="form-label">Backup File</label>
                         <input type="file" class="form-control" id="backup_file" name="backup_file" 
                                accept=".json" required>
                         <small class="form-text text-muted">Select a JSON backup file</small>
                     </div>
-                    <div class="d-grid gap-2">
+                    <div class="d-grid gap-3">
                         <button type="submit" class="btn btn-primary">Restore Backup</button>
                         <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Cancel</a>
                     </div>

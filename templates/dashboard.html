@@ -1,105 +1,92 @@
 {% extends "base.html" %}
 {% block title %}Dashboard - Finance Tracker{% endblock %}
+
 {% block extra_css %}
 <style>
-    :root { --glass: rgba(255, 255, 255, 0.15); }
+    :root { --glass: rgba(218, 162, 162, 0.308); }
     .dashboard-header {
-        background: linear-gradient(135deg, #1c8658 0%, #492c8f 50%, #0b8452 100%);height:240px;
-        margin:0%; padding:20px 0 30px; border-radius: 0 0 20px 20px; margin-bottom: -70px; color: white;
+        background: linear-gradient(135deg, #1c8658 0%, #492c8f 50%, #0b8452 100%);
+        padding: 30px 0 80px; border-radius: 0 0 30px 30px; color: white; margin-bottom:-50px;
     }
-   /*AI financial Insight */ .glass-panel {
+    .glass-panel {
         background: var(--glass); backdrop-filter: blur(15px);
         border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 16px;
     }
-    .stat-card {
-         border-radius: 25px; transition: 0.5s;height:130px; width:250px; padding:1px; border-bottom: 5px solid transparent;
-    }  
-    /* card Border Colors */
-    .b-income { border-color: #27ae60; text-align: center;} .b-expense { text-align: center;border-color: #e74c3c; }
-    .b-balance { border-color: #3498db; text-align: center;} .b-predict { text-align: center;border-color: #e3a711; }
- .icon-circle {
-        width: 45px; height: 45px; display: flex; align-items: center;   justify-content: center; border-radius: 12px; font-size: 1.3rem;
+    /* Adjusted Stat Cards for Header */
+    .header-stat-card {
+        background: rgb(249, 244, 244); border-radius: 20px; padding: 15px;
+        transition: 0.3s; border-bottom: 4px solid transparent;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .header-stat-card h4 { font-size: 1.25rem; font-weight: 800; margin: 0; }
+    .header-stat-card span { font-size: 1rem; color: #6c757d; font-weight: 700; }
+    
+    .b-income { border-color: #27ae60; } .b-expense { border-color: #e74c3c; }
+    .b-balance { border-color: #3498db; } .b-predict { border-color: #bb9a15; }
+
+    .mini-icon {
+        width: 35px; height: 35px; display: flex; align-items: center; 
+        justify-content: center; border-radius: 10px; font-size: 1rem;color:#492c8f;
     }
 </style>
 {% endblock %}
+
 {% block content %}
 <div class="dashboard-header">
-    <div  class="container ">
-        <div style="width:1000px; height:60px;" class="glass-panel p-2 mb-3  d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-cpu text-warning fs-3 me-3"></i>
+    <div class="container">
+        <div class="glass-panel p-2 mb-4 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center ps-2">
+                <i class="bi bi-cpu text-light fs-4 me-3"></i>
                 <div>
-                    <h6 class="mb-0 ">AI Financial Insight</h6>
+                    <h6 class="mb-0 fw-bold">AI Financial Insight</h6>
                     <small class="opacity-75">Ensemble Prediction Active</small>
                 </div>
             </div>
-            <div class="d-none d-md-block text-end">
-                <span class="badge rounded-pill bg-white text-dark px-3 py-2 me-2">LR: Rs {{ "%.0f"|format(prediction.lr_prediction|default(0)|abs) }}</span>
-                <span class="badge rounded-pill bg-white text-dark px-3 py-2">RF: Rs {{ "%.0f"|format(prediction.rf_prediction|default(0)|abs) }}</span>
+            <div class="pe-2">
+                <span class="badge rounded-pill bg-primary text-light px-3 py-2 me-1">Linear Reg: Rs {{ "%.0f"|format(prediction.lr_prediction|default(0)|abs) }}</span>
+                <span class="badge rounded-pill bg-warning text-dark px-3 py-2">Random Forest: Rs {{ "%.0f"|format(prediction.rf_prediction|default(0)|abs) }}</span>
             </div>
         </div>
-        <h3 style="font-family:poppins;font-weight:bold;">Personal Finance Dashboard</h3>
-            <p style="font-weight: 100; font-size: medium;" class="lead opacity-75">Track expenses, income, savings, and AI-based predictions in one smart system.Tracking {{ recent_transactions|length }} activities with AI-driven growth forecasting.</p> 
-    </div>
-</div>
-<div class="container p-1 col-12">
-    <div class="row g-4 mb-2">
-        {% set cards = [
-            {'label': 'Income', 'val': current_month.income, 'class': 'b-income', 'icon': 'bi-cash-stack', 'color': 'text-success', 'bg': 'rgba(39,174,96,0.1)'},
-            {'label': 'Expenses', 'val': current_month.expense, 'class': 'b-expense', 'icon': 'bi-cart-dash', 'color': 'text-danger', 'bg': 'rgba(231,76,60,0.1)'},
-            {'label': 'Balance', 'val': current_month.balance, 'class': 'b-balance', 'icon': 'bi-wallet2', 'color': 'text-primary', 'bg': 'rgba(52,152,219,0.1)'},
-            {'label': 'AI Forecast', 'val': prediction.prediction|abs, 'class': 'b-predict', 'icon': 'bi-stars', 'color': 'text-warning', 'bg': 'rgba(241,196,15,0.1)'}
-        ] %}
-        {% for card in cards %}
-        <div class="col-md-3">
-            <div class="card stat-card shadow-sm p-4 {{ card.class }}">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="icon-circle me-3" style="background: {{ card.bg }}; color: {{ card.color }}">
-                        <i class="bi {{ card.icon }}"></i>
+
+        <div class="row align-items-center g-4">
+            <div class="col-lg-6">
+                <h3 class="fw-bold mb-3">Personal Finance Dashboard</h3>
+                <p class="lead opacity-75 mb-0" style="font-size: 0.90rem; max-width: 500px;">
+                    A smart financial management system designed to track your income, expenses, savings, and overall financial health in real time. It helps you understand where your money is going and how your financial behavior changes over time. 
+                    Currently analyzing  {{ recent_transactions|length }} activities with AI-driven forecasting to predict future trends and improve decision-making accuracy. The system continuously evaluates spending patterns, income flow, and savings behavior to generate intelligent insights and personalized financial recommendations.
+                </p>
+                <a href="{{ url_for('main.reports') }}" class="btn btn-primary shadow-sm px-4 mt-2">
+            <i class="bi-pie-chart-fill me-1"></i> View Report   </a>
+            </div>
+
+            <div class="col-lg-6 ">
+                <div class="row g-3">
+                    {% set metrics = [
+                        {'label': 'Income', 'val': current_month.income, 'class': 'b-income', 'icon': 'bi-cash-stack', 'color': 'text-success', 'bg': 'rgba(39,174,96,0.1)'},
+                        {'label': 'Expenses', 'val': current_month.expense, 'class': 'b-expense', 'icon': 'bi-cart-dash', 'color': 'text-danger', 'bg': 'rgba(231,76,60,0.1)'},
+                        {'label': 'Balance', 'val': current_month.balance, 'class': 'b-balance', 'icon': 'bi-wallet2', 'color': 'text-primary', 'bg': 'rgba(52,152,219,0.1)'},
+                        {'label': 'AI Forecast', 'val': prediction.prediction|abs, 'class': 'b-predict', 'icon': 'bi-stars', 'color': 'text-dark', 'bg': 'rgba(241,196,15,0.1)'}
+                    ] %}
+                    {% for item in metrics %}
+                    <div class="col-6">
+                        <div class="header-stat-card {{ item.class }}">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="mini-icon me-2" style="background: {{ item.bg }}; color: {{ item.color }}">
+                                    <i class="bi {{ item.icon }}"></i>
+                                </div>
+                                <span>{{ item.label }}</span>
+                            </div>
+                            <h4 class="{{ item.color }}">Rs {{ "%.0f"|format(item.val) }}</h4>
+                        </div>
                     </div>
-                    <span class="text-muted fw-bold  ">{{ card.label }}</span>
+                    {% endfor %}
                 </div>
-                <h3 class="fw-bold {{ card.color }} mb-0">Rs {{ "%.0f"|format(card.val) }}</h3>
             </div>
         </div>
-        {% endfor %}
-    </div>
-<div class="container py-4">
-    <div class="row g-4">
-        <!-- INCOME -->
-        <div class="col-md-3">
-            <div class="p-4 rounded-4 shadow h-100 text-white"   style="background:linear-gradient(135deg,#af4c4c,#65aaea);">
-                <h5>Income</h5>
-                <p>Track salary, freelance, and business income for better financial balance.</p>
-                <a class="text-white fw-bold" href="https://www.investopedia.com/personal-finance-4427760" target="_blank">Learn More </a>
-            </div>
-        </div>
-        <!-- EXPENSE -->
-        <div class="col-md-3">
-            <div class="p-4 rounded-4 shadow h-100 text-white"  style="background:linear-gradient(135deg,#2456cd,#25e0ae);">
-                <h5>Expenses</h5>
-                <p>Monitor daily spending and control unnecessary costs with categorized tracking.</p>
-                <a class="text-white fw-bold" href="https://www.investopedia.com/budgeting-and-savings-4689743" target="_blank"> Learn More   </a>
-            </div>
-        </div>
-        <!-- INSIGHTS -->
-        <div class="col-md-3">
-            <div class="p-4 rounded-4 shadow h-100 text-white" style="background:linear-gradient(135deg,#d54848,#65aaea);">
-                <h5> Balance </h5>
-                <p>Your total balance represents the remaining amount of money after calculating all incomes and expenses.   </p>
-            </div>
-        </div>
-        <!-- PREDICTION -->
-        <div class="col-md-3">
-            <div class="p-4 rounded-4 shadow h-100 text-white" style="background:linear-gradient(135deg,#2b57be,#25e0ae);">
-                <h5>AI Prediction</h5>
-                <p>LR + RF models predict future spending trends for smarter planning.</p>
-                <a class="text-white fw-bold" href="https://scikit-learn.org/stable/supervised_learning.html" target="_blank"> ML Guide  </a>
-            </div>
-        </div>         
     </div>
 </div>
-    <div class="row g-4">
+
+  <div class="row g-4 m-2 mt-0">
         <div class="col-lg-3">
             <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
                 <div class="bg-light p-4 border-bottom d-flex justify-content-between align-items-center">
@@ -121,7 +108,7 @@
                 </div>
             </div>
         </div>
-         <div class="col-lg-6">
+         <div class="col-lg-5">
             <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h5 class="fw-bold mb-0">Spending Logic & Trends</h5>
@@ -134,7 +121,7 @@
                 <div id="categoryChart" class="mt-3" style="height: 250px;"></div>
             </div>
         </div>
-        <div class="col-lg-3">
+        <div class="col-lg-4">
     <div class="card shadow-sm border-0 h-100">
         <div class="card-header bg-transparent border-0 pt-4 px-4">
             <h5 class="fw-bold"><i class="bi bi-lightning-charge me-2"></i>Quick Insights</h5>

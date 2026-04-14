@@ -12,11 +12,12 @@
 {% endblock %}
 
 {% block content %}
-<div   class="container py-2">
+<div  class="container py-2">
     <div class="row justify-content-center">
-          <div class="col-md-6 col-lg-6">
-            <div class="card shadow-sm p-3">
-                <form method="POST" action="{{ url_for('main.add_transaction') }}">
+       
+         <div  class="col-md-6 col-lg-5">
+            <div style="background:linear-gradient(138deg,rgba(220, 247, 219, 0.809),rgb(222, 222, 253))" class="card shadow-sm p-3">
+                <form  method="POST" action="{{ url_for('main.add_transaction') }}">
                     <p style="background-color: #3f5ae22b;color:rgb(55, 82, 105);padding :5px; border-radius:5px;">Fill in the details to record your finance.</p> 
                     <div class="mb-2">
     <label class="form-label fw-bold small text-muted text-uppercase">Transaction Type</label>
@@ -63,40 +64,25 @@
 
                     <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
                         <i class="bi bi-check2-circle me-1"></i> Save Record
-                    </button>
-                    
-                    <div class="text-center mt-2">
-                        <a href="{{ url_for('main.transactions') }}" class="text-decoration-none text-muted small">Go back to history</a>
-                    </div>
+                    </button>           
                 </form>
             </div>
         </div>
-        <div  class="col-md-6 col-lg-5">
-            <div   class="card shadow-sm border-0 mb-3">
-    <div class="card-body">
-
-        <!-- Add Transaction Info -->
-        <div style="background:linear-gradient(138deg,rgba(236, 181, 181, 0.624),rgba(185, 185, 236, 0.429),rgba(159, 245, 159, 0.313))" class=" card border-0 shadow-sm">
+         <div   class="col-md-6 col-lg-7">
+            <div  style="background-color: rgba(240, 248, 255, 0.284);color:rgb(241, 246, 250); margin-top:10px;"  class="card shadow-sm border-0 mb-3">
+    <div   class="card-body">
            <!-- Overview Section --> 
-        <div class="p-4  rounded">
-            <h5 class="fw-bold mb-2">
-                <i class="bi bi-wallet2 me-2"></i>Transaction Overview
-            </h5>
-
-            <p class="mb-0 text-muted">
-                This section allows you to record and manage your financial activities. 
-                You can add income and expenses, categorize transactions, and keep track 
-                of your spending patterns. Each entry is saved with details such as amount, 
-                date, and optional notes to help maintain an organized financial record.
-            </p>
-        </div>
-        <div class="m-0 ">
-            <i class="bi bi-plus-circle-fill text-primary  display-7 p-2"> Add Transaction</i>
-        </div>
-            
-            <p class="mb-2 px-2 ">
-                Easily record your income and expenses by following these steps:
-            </p>
+            <h5 style="color:#dce9fd" class="fw-bold mb-2 ">
+                <i class="bi bi-wallet2 me-2 text-warning"></i>Transaction Overview  </h5>
+            <p class="mb-0 ">
+                This section allows you to record and manage your financial activities. <br>
+                You can add income and expenses, categorize transactions, and keep track <br>
+                of your spending patterns. Each entry is saved with details such as amount, <br>
+                date, and optional notes to help maintain an organized financial record. <br>
+            </p>    
+          <br>
+           <h5 style="color:#dfebfb" ><i class="bi bi-send-fill m-2 text-warning"></i>Add Transaction</h5> 
+            <p class="mb-2 px-3 ">  Easily record your income and expenses by following these steps:</p>
             <ul class="mb-2">
                 <li>Select <strong>Income</strong> or <strong>Expense</strong></li>
                 <li>Choose a <strong>Category</strong></li>
@@ -104,11 +90,11 @@
                 <li>Pick the <strong>Date</strong></li>
                 <li>Add <strong>Description</strong> (optional)</li>
             </ul>
-
-            <p class="mb-0 px-2 small text-success fw-semibold">
-                Click <strong>Save Record</strong> to store your transaction.
+            <p class="mb-0 px-2 small text-light fw-semibold">
+                Click <strong>Save Record</strong> to store your transaction. <br>
+                <button style="background-color:blue;margin:10px; margin-top:10px;border:none; border-radius: 5px;"><a  href="{{ url_for('main.transactions') }}" class="text-decoration-none small text-light">Go back to history</a>
+ </button> 
             </p>
-        </div>
 
     </div>
 </div>
