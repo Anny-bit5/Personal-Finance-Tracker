@@ -9,101 +9,61 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body >
     {% if current_user.is_authenticated %}
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #02376b; ">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.dashboard') }}" style="gap: 10px;">
-                <div class="money-logo">
-    <i class="bi bi-coin text-warning fs-3 money-icon"></i>
-</div>
-                <span class="brand-text">Finance Tracker</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.dashboard') }}">
-                            <i class="bi bi-speedometer2"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.transactions') }}">
-                            <i class="bi bi-list-ul"></i> Transactions
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.add_transaction') }}">
-                            <i class="bi bi-plus-circle"></i> Add Transaction
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.reports') }}">
-                            <i class="bi bi-graph-up"></i> Reports
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.prediction') }}">
-                            <i class="bi bi-cpu"></i> Predictions
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="exportDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-download"></i> Export/Backup
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('main.export') }}?format=csv">
-                                <i class="bi bi-filetype-csv"></i> Export as CSV
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('main.export') }}?format=excel">
-                                <i class="bi bi-file-earmark-spreadsheet"></i> Export as Excel
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ url_for('main.backup') }}">
-                                <i class="bi bi-download"></i> Create Backup
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('main.restore') }}">
-                                <i class="bi bi-upload"></i> Restore Backup
-                            </a></li>
-                        </ul>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" style="gap: 8px;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink: 0;">
-                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                            </svg>
-                            <span class="fw-bold">{{ current_user.username }}</span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">
-                                <i class="bi bi-box-arrow-right"></i> Logout
-                            </a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+    <nav class="navbar navbar-expand-lg navbar-dark px-3" style="background: #02376b;">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('main.dashboard') }}">
+            <i class="bi bi-coin text-warning fs-3"></i>
+            <span class="fw-bold">Finance Tracker</span>
+        </a>
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="nav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.transactions') }}"><i class="bi bi-list-ul"></i> Transactions</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.add_transaction') }}"><i class="bi bi-plus-circle"></i> Add Transaction</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.reports') }}"><i class="bi bi-graph-up"></i> Reports</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.prediction') }}"><i class="bi bi-cpu"></i> Predictions</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-download"></i> Data</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ url_for('main.export', format='csv') }}"><i class="bi bi-filetype-csv"></i> CSV</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('main.export', format='excel') }}"><i class="bi bi-file-earmark-spreadsheet"></i> Excel</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ url_for('main.backup') }}"><i class="bi bi-download"></i> Backup</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('main.restore') }}"><i class="bi bi-upload"></i> Restore</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle fw-bold" href="#" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> {{ current_user.username }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
         </div>
     </nav>
     {% endif %}
 
-    <div class="container-fluid mt-4">
+    <main class="p-0">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show m-0 rounded-0" role="alert">
+                        {{ message }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
 
         {% block content %}{% endblock %}
-    </div>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -111,4 +71,3 @@
     {% block extra_js %}{% endblock %}
 </body>
 </html>
-

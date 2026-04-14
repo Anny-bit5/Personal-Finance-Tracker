@@ -4,257 +4,155 @@
 
 {% block extra_css %}
 <style>
-    .prediction-card {
-        border-left: 4px solid;
-        transition: transform 0.2s;
-    }
-    .prediction-card:hover {
-        transform: translateY(-5px);
-    }
-    .prediction-primary { border-left-color: #007bff; }
-    .prediction-success { border-left-color: #28a745; }
-    .prediction-warning { border-left-color: #ffc107; }
-    .prediction-info { border-left-color: #17a2b8; }
-    
-    .confidence-badge {
-        padding: 0.25rem 0.75rem;
-        border-radius: 0.25rem;
-        font-size: 0.875rem;
-        font-weight: 600;
-    }
-    
-    .model-comparison {
-        background: #f8f9fa;
-        border-radius: 8px;
-        padding: 1rem;
-    }
+body{background:#f4f6fb}
+
+.kpi-card{
+    padding:20px;border-radius:16px;color:#fff;
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+    transition:.3s
+}
+.kpi-card:hover{transform:translateY(-4px)}
+
+.kpi-title{font-size:12px;opacity:.85}
+.kpi-value{font-size:26px;font-weight:700;margin-top:5px}
+
+.primary{background:linear-gradient(135deg,#4e54c8,#8f94fb)}
+.success{background:linear-gradient(135deg,hsl(173, 92%, 30%),#96c93d)}
+.dark{background:linear-gradient(135deg,#be1e9b,#414345)}
+
+.main-card{
+    background:#fff;padding:18px;border-radius:14px;
+    box-shadow:0 5px 18px rgba(0,0,0,.05)
+}
+
+.section-title{font-weight:600;margin-bottom:12px;font-size:14px}
+.data-row{padding:10px 0;border-bottom:1px solid #eee}
+.data-row:last-child{border:none}
+.amount-red{color:#dc3545;font-weight:600}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="bi bi-cpu"></i> Expense Predictions</h2>
+<div class="container py-4">
+
+<div class="row g-3 mb-4">
+
+<div class="col-md-4">
+<div class="kpi-card primary">
+<div class="kpi-title">Predicted Spending</div>
+<div class="kpi-value">
+Rs {{ "%.2f"|format(next_month_pred.prediction|abs) if next_month_pred.prediction else "0.00" }}
+</div>
+</div>
 </div>
 
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card shadow-sm prediction-card prediction-primary">
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h4 class="mb-3"><i class="bi bi-calendar-check"></i> Next Month Prediction</h4>
-                        {% if next_month_pred.prediction %}
-                            <h2 class="text-primary mb-3">Rs{{ "%.2f"|format(next_month_pred.prediction) }}</h2>
-                            <div class="d-flex align-items-center gap-3 mb-2">
-                                <span class="confidence-badge bg-{% if next_month_pred.confidence == 'high' %}success{% elif next_month_pred.confidence == 'medium' %}warning{% else %}secondary{% endif %} text-white">
-                                    {{ next_month_pred.confidence|title }} Confidence
-                                </span>
-                                <span class="text-muted">
-                                    <i class="bi bi-info-circle"></i> {{ next_month_pred.message }}
-                                </span>
-                            </div>
-                            <div class="model-comparison mt-3">
-                                <small class="text-muted d-block mb-2">Model Comparison:</small>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <strong>Linear Regression:</strong> Rs{{ "%.2f"|format(next_month_pred.lr_prediction) }}
-                                    </div>
-                                    <div class="col-md-4">
-                                        <strong>Random Forest:</strong> Rs{{ "%.2f"|format(next_month_pred.rf_prediction) }}
-                                    </div>
-                                    <div class="col-md-4">
-                                        <strong>Average (Final):</strong> Rs{{ "%.2f"|format(next_month_pred.prediction) }}
-                                    </div>
-                                </div>
-                            </div>
-                        {% else %}
-                            <div class="alert alert-info">
-                                <i class="bi bi-info-circle"></i> {{ next_month_pred.message }}
-                            </div>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-4 text-center">
-                        <i class="bi bi-graph-up-arrow" style="font-size: 4rem; color: #007bff; opacity: 0.3;"></i>
-                    </div>
+<div class="col-md-4">
+<div class="kpi-card success">
+<div class="kpi-title">Confidence</div>
+<div class="kpi-value">
+{{ next_month_pred.confidence|upper if next_month_pred.confidence else "N/A" }}
+</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="kpi-card dark">
+<div class="kpi-title">Models Used</div>
+<div style="font-size: large;" class="kpi-value ">Linear Regression + Random Forest</div>
+</div>
+</div>
+
+</div>
+
+
+<div class="row g-4">
+
+    <!-- CHART (9 COL) -->
+    <div class="col-md-9">
+        <div class="main-card">
+            <div class="section-title">Spending Trend</div>
+            <div id="predictionChart" style="height:270px;"></div>
+        </div>
+    </div>
+
+    <!-- FUTURE FORECAST (3 COL) -->
+    <div class="col-md-3">
+        <div class="main-card">
+            <div class="section-title">Future Forecast</div>
+
+            {% for pred in predictions_data %}
+            <div class="kpi-card primary mb-2 text-center">
+                <div style="font-size:12px;opacity:.9">{{ pred.month }}</div>
+                <div style="font-weight:700">
+                    Rs {{ "%.2f"|format(pred.prediction|abs) }}
                 </div>
             </div>
+            {% endfor %}
+
         </div>
     </div>
+
 </div>
 
-<div class="row mb-4">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Monthly Expenses</h5>
-            </div>
-            <div class="card-body">
-                {% if recent_months %}
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Month</th>
-                                    <th class="text-end">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in recent_data %}
-                                <tr>
-                                    <td>{{ item.month }}</td>
-                                    <td class="text-end text-danger fw-bold">Rs{{ "%.2f"|format(item.amount) }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <p class="text-muted text-center">No recent expense data available</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-calendar-forward"></i> Future Predictions</h5>
-            </div>
-            <div class="card-body">
-                {% if predictions_data %}
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Month</th>
-                                    <th class="text-end">Predicted Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for pred in predictions_data %}
-                                <tr>
-                                    <td>{{ pred.month }}</td>
-                                    <td class="text-end text-warning fw-bold">Rs{{ "%.2f"|format(pred.prediction) }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle"></i> Need at least 3 months of data for predictions
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
+<div class="col-md-12 mt-3">
+<div class="main-card">
+<div class="section-title">Recent History</div>
+{% for item in recent_data %}
+<div class="data-row d-flex justify-content-between">
+<span>{{ item.month }}</span>
+<span class="amount-red">Rs {{ "%.2f"|format(item.amount) }}</span>
+</div>
+{% endfor %}
+</div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Historical vs Predicted Expenses</h5>
-            </div>
-            <div class="card-body">
-                {% if chart_labels and chart_historical %}
-                    <div id="predictionChart"></div>
-                {% else %}
-                    <p class="text-muted text-center">No data available for chart</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
+
 </div>
 
-{% if trend_labels and trend_values|length > 0 %}
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-trending-up"></i> Expense Trend (Last 12 Months)</h5>
-            </div>
-            <div class="card-body">
-                <div id="trendChart"></div>
-            </div>
-        </div>
-    </div>
 </div>
-{% endif %}
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Prediction Chart (Historical + Predicted)
-    {% if chart_labels and chart_historical %}
-    var historicalTrace = {
-        x: {{ recent_months|tojson }},
-        y: {{ recent_amounts|tojson }},
-        name: 'Historical',
-        type: 'scatter',
-        mode: 'lines+markers',
-        line: {color: '#dc3545', width: 2},
-        marker: {size: 8, color: '#dc3545'}
-    };
-    
-    {% if chart_predictions|length > 0 %}
-    var predictionTrace = {
-        /* FIX: Wrap length in parentheses to apply the minus to the NUMBER, not the list */
-        x: {{ chart_labels[-(chart_predictions|length):]|tojson }},
-        y: {{ chart_predictions|tojson }},
-        name: 'Predicted',
-        type: 'scatter',
-        mode: 'lines+markers',
-        line: {color: '#ffc107', width: 2, dash: 'dash'},
-        marker: {size: 8, color: '#ffc107'}
-    };
-    
-    var predictionLayout = {
-        title: '',
-        height: 400,
-        xaxis: {title: 'Month'},
-        yaxis: {title: 'Amount (Rs)'},
-        margin: {l: 50, r: 20, t: 20, b: 50},
-        legend: {x: 0, y: 1}
-    };
-    
-    Plotly.newPlot('predictionChart', [historicalTrace, predictionTrace], predictionLayout);
-    {% else %}
-    var predictionLayout = {
-        title: '',
-        height: 400,
-        xaxis: {title: 'Month'},
-        yaxis: {title: 'Amount (Rs)'},
-        margin: {l: 50, r: 20, t: 20, b: 50}
-    };
-    
-    Plotly.newPlot('predictionChart', [historicalTrace], predictionLayout);
-    {% endif %}
-    {% endif %}
-    
-    // Trend Chart
-    {% if trend_labels and trend_values|length > 0 %}
-    var trendTrace = {
-        x: {{ trend_labels|tojson }},
-        y: {{ trend_values|tojson }},
-        type: 'scatter',
-        mode: 'lines+markers',
-        name: 'Expenses',
-        line: {color: '#007bff', width: 2},
-        marker: {size: 8, color: '#007bff'},
-        fill: 'tozeroy',
-        fillcolor: 'rgba(0, 123, 255, 0.1)'
-    };
-    
-    var trendLayout = {
-        title: '',
-        height: 350,
-        xaxis: {title: 'Month'},
-        yaxis: {title: 'Amount (Rs)'},
-        margin: {l: 50, r: 20, t: 20, b: 50}
-    };
-    
-    Plotly.newPlot('trendChart', [trendTrace], trendLayout);
-    {% endif %}
+{% if recent_months and recent_amounts and chart_labels and chart_predictions %}
+
+/* FULL TIMELINE (history + forecast) */
+const xData = {{ recent_months|tojson }}.concat({{ chart_labels|tojson }});
+
+/* HISTORY (only real values, rest null) */
+const historyY = {{ recent_amounts|tojson }}.concat(
+    Array({{ chart_predictions|length }}).fill(null)
+);
+
+/* PREDICTION (null for history, values after April) */
+const predictionY = Array({{ recent_months|length }}).fill(null)
+    .concat({{ chart_predictions|tojson }});
+
+/* HISTORY TRACE */
+const historyTrace = {
+    x: xData,
+    y: historyY,
+    name: 'History',
+    mode: 'lines+markers',
+    type: 'scatter'
+};
+
+/* PREDICTION TRACE */
+const predictionTrace = {
+    x: xData,
+    y: predictionY,
+    name: 'Forecast',
+    mode: 'lines+markers',
+    type: 'scatter',
+    line: { dash: 'dash', color: '#ff4d4d' }
+};
+
+Plotly.newPlot('predictionChart', [historyTrace, predictionTrace], {
+    margin: { l: 30, r: 20, t: 10, b: 30 },
+    xaxis: { title: 'Months' },
+    yaxis: { title: 'Amount (Rs)' }
+});
+
+{% endif %}
 </script>
 {% endblock %}

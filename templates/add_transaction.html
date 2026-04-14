@@ -12,13 +12,13 @@
 {% endblock %}
 
 {% block content %}
-<div class="container py-2">
+<div   class="container py-2">
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow-sm p-4">
+          <div class="col-md-6 col-lg-6">
+            <div class="card shadow-sm p-3">
                 <form method="POST" action="{{ url_for('main.add_transaction') }}">
-                    <p style="background-color: #114696;color:aliceblue;padding :5px; border-radius:5px;">Fill in the details to record your finance.</p> 
-                    <div class="mb-4">
+                    <p style="background-color: #3f5ae22b;color:rgb(55, 82, 105);padding :5px; border-radius:5px;">Fill in the details to record your finance.</p> 
+                    <div class="mb-2">
     <label class="form-label fw-bold small text-muted text-uppercase">Transaction Type</label>
     <div class="d-flex gap-3">
         <input type="radio" class="btn-check" name="type" id="income" value="income" autocomplete="off" required>
@@ -32,8 +32,7 @@
         </label>
     </div>
 </div>
-
-                    <div class="mb-3">
+                    <div class="mb-2">
                         <label class="form-label fw-semibold small text-muted">CATEGORY</label>
                         <select class="form-select bg-light" name="category_id" required>
                             <option value="" disabled selected>Choose...</option>
@@ -43,7 +42,7 @@
                         </select>
                     </div>
 
-                    <div class="row g-3 mb-3">
+                    <div class="row g-3 mb-2">
                         <div class="col-md-7">
                             <label class="form-label fw-semibold small text-muted">AMOUNT</label>
                             <div class="input-group">
@@ -57,7 +56,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <label class="form-label fw-semibold small text-muted">DESCRIPTION</label>
                         <textarea class="form-control" name="description" rows="2" placeholder="Optional notes..."></textarea>
                     </div>
@@ -66,12 +65,55 @@
                         <i class="bi bi-check2-circle me-1"></i> Save Record
                     </button>
                     
-                    <div class="text-center mt-3">
+                    <div class="text-center mt-2">
                         <a href="{{ url_for('main.transactions') }}" class="text-decoration-none text-muted small">Go back to history</a>
                     </div>
                 </form>
             </div>
         </div>
+        <div  class="col-md-6 col-lg-5">
+            <div   class="card shadow-sm border-0 mb-3">
+    <div class="card-body">
+
+        <!-- Add Transaction Info -->
+        <div style="background:linear-gradient(138deg,rgba(236, 181, 181, 0.624),rgba(185, 185, 236, 0.429),rgba(159, 245, 159, 0.313))" class=" card border-0 shadow-sm">
+           <!-- Overview Section --> 
+        <div class="p-4  rounded">
+            <h5 class="fw-bold mb-2">
+                <i class="bi bi-wallet2 me-2"></i>Transaction Overview
+            </h5>
+
+            <p class="mb-0 text-muted">
+                This section allows you to record and manage your financial activities. 
+                You can add income and expenses, categorize transactions, and keep track 
+                of your spending patterns. Each entry is saved with details such as amount, 
+                date, and optional notes to help maintain an organized financial record.
+            </p>
+        </div>
+        <div class="m-0 ">
+            <i class="bi bi-plus-circle-fill text-primary  display-7 p-2"> Add Transaction</i>
+        </div>
+            
+            <p class="mb-2 px-2 ">
+                Easily record your income and expenses by following these steps:
+            </p>
+            <ul class="mb-2">
+                <li>Select <strong>Income</strong> or <strong>Expense</strong></li>
+                <li>Choose a <strong>Category</strong></li>
+                <li>Enter the <strong>Amount</strong></li>
+                <li>Pick the <strong>Date</strong></li>
+                <li>Add <strong>Description</strong> (optional)</li>
+            </ul>
+
+            <p class="mb-0 px-2 small text-success fw-semibold">
+                Click <strong>Save Record</strong> to store your transaction.
+            </p>
+        </div>
+
+    </div>
+</div>
+        </div>
+       
     </div>
 </div>
 

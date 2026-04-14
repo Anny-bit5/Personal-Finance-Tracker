@@ -1,29 +1,25 @@
 /* 1. Global Styles */
 body {
-    background:linear-gradient(100deg, #80a79a, #4a9bd0);
-    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    color: #333;
-    margin:0%;
-    padding: 0%;
+    background:linear-gradient(145deg,rgba(255, 0, 0, 0.144),rgba(0, 0, 255, 0.15),rgba(17, 159, 17, 0.419));
+     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color: #333;  margin:0%; padding: 0%;
 }
 
 /* 2. Navbar & Branding */
 .navbar-brand {
-    font-weight: bold;
-    font-size: 1.3rem;
-    text-decoration: none !important;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    font-weight: bold; font-size: 1.5rem;
+    text-decoration: none !important;  display:flex;
+    align-items: center;  gap: 10px;
     transition: transform 0.3s ease;
 }
+/* navbar links  */
 .nav-link{
     color:rgb(250, 240, 240);
 }
 
-/* App Name  */
+/* app label   */
 .brand-text {
-    font-weight: 700;
+    font-weight: 500;
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
@@ -38,30 +34,20 @@ body {
     font-size: 1.6rem;
     transition: 0.4s;
 }
+.stat-card {
+         border-radius: 25px; transition: 0.5s;height:125px; width:270px;
+        border-bottom: 5px solid transparent;
+    }
 
-
-/* 4. UI Components (Cards, Buttons, Inputs) */
-.card, .stat-card, .btn, .form-control, .alert {
-    border: none;
-    border-radius: 8px; /* Standardized rounded corners */
+/*  Cards, Buttons, Inputs */
+.card, .btn, .form-control, .alert {
+    border: 2px 3px solid rgb(54, 38, 157);
+    border-radius: 8px; /* rounded corners */
 }
-
 .card-header {
-    background: #fff;
-    font-weight: 600;
-    border-bottom: 1px solid #eee;
+    background: #fff;   font-weight: 600; border-bottom: 1px solid #eee;
 }
-
 .shadow-sm { box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important; }
-
-/* 5. Custom Scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { 
-    background: #0a1889; 
-    border-radius: 10px; 
-}
-
 @keyframes float {
     0%, 100% { transform: translateY(2px); }
     50% { transform: translateY(-4px); }

@@ -5,7 +5,7 @@ import os
 
 # Initialize Flask app
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-change-in-production'
+app.config['SECRET_KEY'] = 'anny123'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///finance_tracker.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
