@@ -1,0 +1,70 @@
+ <!-- FOOTER -->
+<footer class="mt-5 pt-5 pb-3 text-white" 
+style="background: linear-gradient(110deg,rgb(98, 7, 172),rgb(143, 47, 98),rgb(142, 13, 171),rgb(3, 42, 48)); border-top-left-radius:20px; border-top-right-radius:20px;">
+
+    <div class="container">
+
+        <div class="row g-4">
+
+            <!-- BRAND / ABOUT -->
+            <div class="col-md-4">
+                <h5 class="fw-bold">
+                    <i class="bi bi-wallet2 text-warning me-2"></i>Finance Tracker
+                </h5>
+                <p class="small opacity-75">
+                    A smart personal finance management system to track income, expenses, and savings with AI-powered insights and forecasting. 
+                    Stay in control of your financial journey with real-time analytics.
+                </p>
+            </div>
+
+            <!-- QUICK LINKS -->
+            <div class="col-md-2">
+                <h6 class="fw-bold mb-3">Quick Links</h6>
+                <ul class="list-unstyled small">
+                    <li><a href="{{ url_for('main.dashboard') }}" class="text-white text-decoration-none">Dashboard</a></li>
+                    <li><a href="{{ url_for('main.transactions') }}" class="text-white text-decoration-none">Transactions</a></li>
+                    <li><a href="{{ url_for('main.add_transaction') }}" class="text-white text-decoration-none">Add Entry</a></li>
+                    <li><a href="{{ url_for('main.reports') }}" class="text-white text-decoration-none">Reports</a></li>
+                    <li><a href="{{ url_for('main.prediction') }}" class="text-white text-decoration-none">Predictions</a></li>
+                </ul>
+            </div>
+
+            <!-- FEATURES -->
+            <div class="col-md-3">
+                <h6 class="fw-bold mb-3">Features</h6>
+                <ul class="list-unstyled small">
+                    <li><i class="bi bi-check-circle me-2"></i>Expense Tracking</li>
+                    <li><i class="bi bi-check-circle me-2"></i>Income Management</li>
+                    <li><i class="bi bi-check-circle me-2"></i>AI Forecasting</li>
+                    <li><i class="bi bi-check-circle me-2"></i>Data Export</li>
+                    <li><i class="bi bi-check-circle me-2"></i>Secure Backup</li>
+                </ul>
+            </div>
+
+            <!-- CONTACT / SOCIAL -->
+            <div class="col-md-3">
+                <h6 class="fw-bold mb-3">Connect</h6>
+                <div class="d-flex gap-3 fs-5">
+                    <a href="#" class="text-white"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-linkedin"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-github"></i></a>
+                </div>
+
+                <p class="small mt-3 opacity-75">
+                    Manage your finances smarter with AI-powered insights.
+                </p>
+            </div>
+
+        </div>
+
+        <!-- BOTTOM BAR -->
+        <hr class="border-light mt-4">
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small opacity-75">
+            <span>© 2026 Finance Tracker. All rights reserved.</span>
+            <span>Designed with <i class="bi bi-heart-fill text-danger"></i> for smarter finance</span>
+        </div>
+
+    </div>
+</footer>

@@ -4,6 +4,9 @@
 
 {% block extra_css %}
 <style>
+body{
+   background: linear-gradient(120deg, #10907d 5%, #8833a4 60%,rgb(192, 71, 192) 15%, #138354 );
+}
 .kpi-card{
     padding:20px;border-radius:16px;color:#fff;
     box-shadow:0 8px 20px rgba(0,0,0,.08);
@@ -14,9 +17,9 @@
 .kpi-title{font-size:12px;opacity:.85}
 .kpi-value{font-size:26px;font-weight:700;margin-top:5px}
 
-.primary{background:linear-gradient(135deg,#4e54c8,#8f94fb)}
+.primary{background:linear-gradient(135deg,#4076aa,#8ad7b3)}
 .success{background:linear-gradient(135deg,hsl(173, 92%, 30%),#96c93d)}
-.dark{background:linear-gradient(135deg,#be1e9b,#414345)}
+.dark{background:linear-gradient(135deg,#4ec4bc,#89b65d)}
 
 .main-card{
     background:#fff;padding:18px;border-radius:14px;
@@ -27,85 +30,95 @@
 .data-row{padding:10px 0;border-bottom:1px solid #eee}
 .data-row:last-child{border:none}
 .amount-red{color:#dc3545;font-weight:600}
+
+/* New styling for the info section */
+.info-text { font-size: 13px; color: #666; line-height: 1.5; }
+.info-header { font-size: 15px; color: #4e54c8; font-weight: 600; margin-top: 10px; }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container py-4">
 
-<div class="row g-3 mb-4">
-
-<div class="col-md-4">
-<div class="kpi-card primary">
-<div class="kpi-title">Predicted Spending</div>
-<div class="kpi-value">
-Rs {{ "%.2f"|format(next_month_pred.prediction|abs) if next_month_pred.prediction else "0.00" }}
-</div>
-</div>
-</div>
-
-<div class="col-md-4">
-<div class="kpi-card success">
-<div class="kpi-title">Confidence</div>
-<div class="kpi-value">
-{{ next_month_pred.confidence|upper if next_month_pred.confidence else "N/A" }}
-</div>
-</div>
-</div>
-
-<div class="col-md-4">
-<div class="kpi-card dark">
-<div class="kpi-title">Models Used</div>
-<div style="font-size: large;" class="kpi-value ">Linear Regression + Random Forest</div>
-</div>
-</div>
-
-</div>
-
-
-<div class="row g-4">
-
-    <!-- CHART (9 COL) -->
-    <div class="col-md-9">
-        <div class="main-card">
-            <div class="section-title">Spending Trend</div>
-            <div id="predictionChart" style="height:270px;"></div>
-        </div>
-    </div>
-
-    <!-- FUTURE FORECAST (3 COL) -->
-    <div class="col-md-3">
-        <div class="main-card">
-            <div class="section-title">Future Forecast</div>
-
-            {% for pred in predictions_data %}
-            <div class="kpi-card primary mb-2 text-center">
-                <div style="font-size:12px;opacity:.9">{{ pred.month }}</div>
-                <div style="font-weight:700">
-                    Rs {{ "%.2f"|format(pred.prediction|abs) }}
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="kpi-card primary">
+                <div class="kpi-title">Predicted Spending</div>
+                <div class="kpi-value">
+                Rs {{ "%.2f"|format(next_month_pred.prediction|abs) if next_month_pred.prediction else "0.00" }}
                 </div>
             </div>
-            {% endfor %}
+        </div>
 
+        <div class="col-md-4">
+            <div class="kpi-card success">
+                <div class="kpi-title">Confidence</div>
+                <div class="kpi-value">
+                {{ next_month_pred.confidence|upper if next_month_pred.confidence else "N/A" }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="kpi-card dark">
+                <div class="kpi-title">Models Used</div>
+                <div style="font-size: large;" class="kpi-value ">Linear Regression + Random Forest</div>
+            </div>
         </div>
     </div>
 
-</div>
+    <div class="row g-4">
+        <div  class="col-md-3">
+            <div  style="color:white;background:linear-gradient(150deg,rgb(243, 79, 150),rgb(79, 49, 151))"class="main-card h-100">
+                <div class="section-title text-light">AI Insights & Methodology</div>
+                
+                <div class="info-header text-light">How it works</div>
+                <p class="info-text text-light">We combine two machine learning models to analyze your patterns. <strong>Linear Regression</strong> identifies your long-term spending trajectory, while <strong>Random Forest</strong> detects complex fluctuations and seasonal habits.</p>
+                
+                <div class="info-header text-light">Understanding Confidence</div>
+                <p class="info-text text-light">The "Confidence" level tells you how predictable your spending is. If you have large, irregular expenses, the confidence will be <strong>LOW</strong>. As your habits stabilize and you log more data, the forecast becomes more reliable.</p>
+                
+                      </div>
+        </div>
+        <div class="col-md-6">
+            <div class="main-card">
+                <div class="section-title">Spending Trend</div>
+                <div id="predictionChart" style="height:270px;"></div>
+            </div>
+        </div>
 
-<div class="col-md-12 mt-3">
-<div class="main-card">
-<div class="section-title">Recent History</div>
-{% for item in recent_data %}
-<div class="data-row d-flex justify-content-between">
-<span>{{ item.month }}</span>
-<span class="amount-red">Rs {{ "%.2f"|format(item.amount) }}</span>
-</div>
-{% endfor %}
-</div>
-</div>
+        
 
+        <div class="col-md-3">
+            <div class="main-card">
+                <div class="section-title">Future Forecast</div>
+                {% for pred in predictions_data %}
+                <div class="kpi-card primary mb-2 text-center">
+                    <div style="font-size:12px;opacity:.9">{{ pred.month }}</div>
+                    <div style="font-weight:700">
+                        Rs {{ "%.2f"|format(pred.prediction|abs) }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 
-</div>
+    <div class="row mt-4 g-4">
+        <div class="col-md-6">
+            <div class="main-card h-100">
+                <div class="section-title">Recent History</div>
+                {% for item in recent_data %}
+                <div class="data-row d-flex justify-content-between">
+                    <span>{{ item.month }}</span>
+                    <span class="amount-red">Rs {{ "%.2f"|format(item.amount) }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        
+    </div>
 
 </div>
 {% endblock %}
@@ -114,19 +127,15 @@ Rs {{ "%.2f"|format(next_month_pred.prediction|abs) if next_month_pred.predictio
 <script>
 {% if recent_months and recent_amounts and chart_labels and chart_predictions %}
 
-/* FULL TIMELINE (history + forecast) */
 const xData = {{ recent_months|tojson }}.concat({{ chart_labels|tojson }});
 
-/* HISTORY (only real values, rest null) */
 const historyY = {{ recent_amounts|tojson }}.concat(
     Array({{ chart_predictions|length }}).fill(null)
 );
 
-/* PREDICTION (null for history, values after April) */
 const predictionY = Array({{ recent_months|length }}).fill(null)
     .concat({{ chart_predictions|tojson }});
 
-/* HISTORY TRACE */
 const historyTrace = {
     x: xData,
     y: historyY,
@@ -135,7 +144,6 @@ const historyTrace = {
     type: 'scatter'
 };
 
-/* PREDICTION TRACE */
 const predictionTrace = {
     x: xData,
     y: predictionY,
@@ -146,9 +154,10 @@ const predictionTrace = {
 };
 
 Plotly.newPlot('predictionChart', [historyTrace, predictionTrace], {
-    margin: { l: 30, r: 20, t: 10, b: 30 },
+    margin: { l: 40, r: 20, t: 10, b: 40 },
     xaxis: { title: 'Months' },
-    yaxis: { title: 'Amount (Rs)' }
+    yaxis: { title: 'Amount (Rs)' },
+    legend: { orientation: 'h', y: -0.2 }
 });
 
 {% endif %}

@@ -24,6 +24,9 @@ def dashboard():
     # Get current month summary
     now = datetime.now()
     current_month = get_monthly_summary(current_user.id, now.year, now.month)
+    # 1. Calculate or fetch your data
+    # Example data:
+    prediction_value = {"prediction": 2934.75, "confidence": "low"}
     
     # Get previous month for comparison
     if now.month == 1:
@@ -50,6 +53,7 @@ def dashboard():
     trend_labels, trend_values = get_expense_trend(current_user.id, 6)
     
     return render_template('dashboard.html',
+    next_month_pred=prediction_value,
                          current_month=current_month,
                          prev_month=prev_month,
                          category_breakdown=category_breakdown,
@@ -58,7 +62,9 @@ def dashboard():
                          prediction=prediction,
                          recent_transactions=recent_transactions,
                          trend_labels=trend_labels,
-                         trend_values=trend_values)
+                         trend_values=trend_values,
+                         report_data=chart_data
+                         )
 
 @main_bp.route('/transactions')
 @login_required

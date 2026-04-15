@@ -11,10 +11,10 @@
 </head>
 <body >
     {% if current_user.is_authenticated %}
-    <nav class="navbar navbar-expand-lg navbar-dark px-3" style="background: #02376b;">
+    <nav class="navbar navbar-expand-lg navbar-dark px-3" style="background: linear-gradient(80deg,rgb(106, 19, 178),rgb(207, 51, 134),rgb(191, 17, 226),rgb(70, 18, 202))">
         <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('main.dashboard') }}">
-            <i class="bi bi-coin text-warning fs-3"></i>
-            <span class="fw-bold">Finance Tracker</span>
+           <i class="bi bi-currency-exchange text-warning"></i>
+            <span style="font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;font-weight: bold;" class="fw-bold ">Finance Tracker</span>
         </a>
         <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav">
             <span class="navbar-toggler-icon"></span>
@@ -58,6 +58,7 @@
                     <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show m-0 rounded-0" role="alert">
                         {{ message }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
+                   
                 {% endfor %}
             {% endif %}
         {% endwith %}
@@ -69,5 +70,6 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block extra_js %}{% endblock %}
+     {% include "footer.html" %}
 </body>
 </html>

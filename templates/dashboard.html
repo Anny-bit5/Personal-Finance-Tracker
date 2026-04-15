@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 {% block title %}Dashboard - Finance Tracker{% endblock %}
-
 {% block extra_css %}
 <style>
-    :root { --glass: rgba(218, 162, 162, 0.308); }
+    :root { --glass: rgba(194, 47, 121, 0.239); }
     .dashboard-header {
-        background: linear-gradient(135deg, #1c8658 0%, #492c8f 50%, #0b8452 100%);
-        padding: 30px 0 80px; border-radius: 0 0 30px 30px; color: white; margin-bottom:-50px;
+        background: linear-gradient(135deg, rgb(175, 12, 107),#05065e 10%, #1723a4 65%,rgb(179, 65, 179) 5%, #08988c );
+        padding: 30px 10px 20px 0px; margin-bottom: -20px;
+        border-radius: 0 0 30px 3\0px; color: white; 
     }
     .glass-panel {
-        background: var(--glass); backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 16px;
+        background: var(--glass); backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.127); border-radius: 16px;
     }
     /* Adjusted Stat Cards for Header */
     .header-stat-card {
-        background: rgb(249, 244, 244); border-radius: 20px; padding: 15px;
+        background:linear-gradient(150deg,rgb(194, 45, 62),rgb(134, 45, 154)); border-radius: 20px; padding: 15px; color: aliceblue;
         transition: 0.3s; border-bottom: 4px solid transparent;
         box-shadow: 0 8px 20px rgba(0,0,0,0.1);
     }
@@ -43,52 +43,68 @@
                 </div>
             </div>
             <div class="pe-2">
-                <span class="badge rounded-pill bg-primary text-light px-3 py-2 me-1">Linear Reg: Rs {{ "%.0f"|format(prediction.lr_prediction|default(0)|abs) }}</span>
-                <span class="badge rounded-pill bg-warning text-dark px-3 py-2">Random Forest: Rs {{ "%.0f"|format(prediction.rf_prediction|default(0)|abs) }}</span>
+                <span class="badge rounded-pill bg-success text-light px-3 py-2 me-1">Linear Reg: Rs {{ "%.0f"|format(prediction.lr_prediction|default(0)|abs) }}</span>
+                <span class="badge rounded-pill bg-primary text-light px-3 py-2">Random Forest: Rs {{ "%.0f"|format(prediction.rf_prediction|default(0)|abs) }}</span>
             </div>
         </div>
 
-        <div class="row align-items-center g-4">
-            <div class="col-lg-6">
+        <div class="row  ">
+            <div style="margin-left: 20px;" class="col-lg-6 ">
                 <h3 class="fw-bold mb-3">Personal Finance Dashboard</h3>
-                <p class="lead opacity-75 mb-0" style="font-size: 0.90rem; max-width: 500px;">
-                    A smart financial management system designed to track your income, expenses, savings, and overall financial health in real time. It helps you understand where your money is going and how your financial behavior changes over time. 
-                    Currently analyzing  {{ recent_transactions|length }} activities with AI-driven forecasting to predict future trends and improve decision-making accuracy. The system continuously evaluates spending patterns, income flow, and savings behavior to generate intelligent insights and personalized financial recommendations.
-                </p>
-                <a href="{{ url_for('main.reports') }}" class="btn btn-primary shadow-sm px-4 mt-2">
-            <i class="bi-pie-chart-fill me-1"></i> View Report   </a>
+                <p class="lead opacity-77  mb-2" style="font-size:16px; max-width: 800px;">
+        This dashboard provides a complete overview of your income, expenses, and savings in one place. It helps you track your financial activities, understand spending patterns, and make better budgeting decisions.  With AI-powered insights and forecasting, you can monitor
+         your progress and plan ahead with greater accuracy and control.It also highlights key trends, identifies potential savings opportunities, and gives you a clearer picture of your financial health. </p>      <a style="color:white;background-color: rgb(68, 180, 62);" href="{{ url_for('main.reports') }}" class="btn shadow-sm px-4">
+                    <i class="bi-pie-chart-fill me-1"></i> View Report
+                </a>
             </div>
-
-            <div class="col-lg-6 ">
-                <div class="row g-3">
-                    {% set metrics = [
-                        {'label': 'Income', 'val': current_month.income, 'class': 'b-income', 'icon': 'bi-cash-stack', 'color': 'text-success', 'bg': 'rgba(39,174,96,0.1)'},
-                        {'label': 'Expenses', 'val': current_month.expense, 'class': 'b-expense', 'icon': 'bi-cart-dash', 'color': 'text-danger', 'bg': 'rgba(231,76,60,0.1)'},
-                        {'label': 'Balance', 'val': current_month.balance, 'class': 'b-balance', 'icon': 'bi-wallet2', 'color': 'text-primary', 'bg': 'rgba(52,152,219,0.1)'},
-                        {'label': 'AI Forecast', 'val': prediction.prediction|abs, 'class': 'b-predict', 'icon': 'bi-stars', 'color': 'text-dark', 'bg': 'rgba(241,196,15,0.1)'}
-                    ] %}
-                    {% for item in metrics %}
-                    <div class="col-6">
-                        <div class="header-stat-card {{ item.class }}">
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="mini-icon me-2" style="background: {{ item.bg }}; color: {{ item.color }}">
-                                    <i class="bi {{ item.icon }}"></i>
-                                </div>
-                                <span>{{ item.label }}</span>
-                            </div>
-                            <h4 class="{{ item.color }}">Rs {{ "%.0f"|format(item.val) }}</h4>
-                        </div>
-                    </div>
-                    {% endfor %}
+            <div class="col-lg-5 text-left">
+        <img src="{{ url_for('static', filename='banner_img.png') }}" 
+             alt="Finance Illustration" 
+             class="img-fluid" 
+             style="max-height:290px; width:370px; margin-left:205px;">
+    </div>
+          <!--<div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-60">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h6 class="fw-bold mb-0">Spending Logic & Trends</h6>
+                    <i class="bi bi-info-circle text-muted"></i>
                 </div>
+                <div id="categoryChart" class="mt-3" style="height: 250px;"></div>
             </div>
+        </div>-->  
+           
         </div>
     </div>
 </div>
+<div class="row g-2 mx-4 mb-2">
+                    {% set metrics = [
+                        {'label': 'Income', 'val': current_month.income, 'class': 'b-income', 'icon': 'bi-cash-stack', 'color': 'text-dark', 'bg': 'white'},
+                        {'label': 'Expenses', 'val': current_month.expense, 'class': 'b-expense', 'icon': 'bi-cart-dash', 'color': 'text-dark', 'bg': 'white'},
+                     { 'label': 'Balance', 'val': current_month.balance, 'class': 'b-balance', 'icon': 'bi-wallet2', 'color': 'text-dark', 'bg': 'white'},
+                        {'label': 'AI Forecast', 'val': prediction.prediction|abs, 'class': 'b-predict', 'icon': 'bi-stars', 'color': 'text-dark', 'bg': 'white'}
+                    ] %}
+                    {% for item in metrics %}
+                    <div class="col-3">
+                        <div class="header-stat-card {{ item.class }}">
+                            <div class=" h-60 d-flex align-items-center mb-3">
+                                <div class="mini-icon me-2" style="background: {{ item.bg }}; color: {{ item.color }}">
+                                    <i class="bi {{ item.icon }}"></i>
+                                </div>
+                                <span style="color:aliceblue">{{ item.label }}</span>
+                            </div>
+                            <h4 class="text-light">Rs {{ "%.0f"|format(item.val) }}</h4>
+                        </div>
+                    </div>
+                    {% endfor %}
+            </div>
 
-  <div class="row g-4 m-2 mt-0">
-        <div class="col-lg-3">
-            <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+</div>
+<!-- activity + chart + Quick Insights Area-->
+<div class="mt-1">
+    <div class="container  mt-1 p-3  glass-panel">
+    <div class="row g-3">
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 h-90 overflow-hidden">
                 <div class="bg-light p-4 border-bottom d-flex justify-content-between align-items-center">
                     <h6 class="fw-bold mb-0">Recent Activity</h6>
                     <a href="{{ url_for('main.transactions') }}" class="btn btn-sm btn-outline-primary border-0">See All</a>
@@ -108,45 +124,61 @@
                 </div>
             </div>
         </div>
-         <div class="col-lg-5">
+
+        <div class="col-lg-5">
             <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h5 class="fw-bold mb-0">Spending Logic & Trends</h5>
                     <i class="bi bi-info-circle text-muted"></i>
                 </div>
-                <p class="text-muted">
-                    Our Random Forest model has detected a stable pattern in your {{ recent_transactions|length }} recent activities. 
-                    This ensures your Rs {{ "%.0f"|format(prediction.prediction|abs) }} forecast remains highly accurate for next month.
+                <p class="text-muted small">
+                    Analyzing patterns in {{ recent_transactions|length }} recent activities. The forecast is based on continuous evaluation of spending behavior.
                 </p>
                 <div id="categoryChart" class="mt-3" style="height: 250px;"></div>
             </div>
         </div>
-        <div class="col-lg-4">
-    <div class="card shadow-sm border-0 h-100">
-        <div class="card-header bg-transparent border-0 pt-4 px-4">
-            <h5 class="fw-bold"><i class="bi bi-lightning-charge me-2"></i>Quick Insights</h5>
-        </div>
-        <div class="card-body">
-            <div class="d-flex flex-column gap-3">
-                <div class="p-2 rounded bg-light border-start border-success border-4">
-                    <p class="mb-1 fw-bold text-success small"><i class="bi bi-wallet2 me-1"></i> Savings Surplus</p>
-                    <p class="mb-0 text-muted small">Your income significantly exceeds your spending this month.</p>
+
+        <div class="col-lg-3">
+            <div class="card shadow-sm border-0 h-100 rounded-4">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <h5 class="fw-bold"><i class="bi bi-lightning-charge me-2"></i>Quick Insights</h5>
                 </div>
-                <div class="p-2 rounded bg-light border-start border-primary border-4">
-                    <p class="mb-1 fw-bold text-primary small"><i class="bi bi-cart-check me-1"></i> Top Category</p>
-                    <p class="mb-0 text-muted small">Education is your largest expense share at 40.8%.</p>
-                </div>
-                <div class="p-2 rounded bg-light border-start border-info border-4">
-                    <p class="mb-1 fw-bold text-info small"><i class="bi bi-shield-check me-1"></i> Health Status</p>
-                    <p class="mb-0 text-muted small">Financial trajectory is stable. Continue tracking your goals.</p>
+                <div class="card-body">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="p-2 rounded bg-light border-start border-success border-4">
+                            <p class="mb-1 fw-bold text-success small"><i class="bi bi-wallet2 me-1"></i> Savings Surplus</p>
+                            <p class="mb-0 text-muted small">Your income significantly exceeds your spending this month.</p>
+                        </div>
+                        <div class="p-2 rounded bg-light border-start border-primary border-4">
+                            <p class="mb-1 fw-bold text-primary small"><i class="bi bi-cart-check me-1"></i> Top Category</p>
+                            <p class="mb-0 text-muted small">Education is your largest expense share at 40.8%.</p>
+                        </div>
+                        <div class="p-2 rounded bg-light border-start border-info border-4">
+                            <p class="mb-1 fw-bold text-info small"><i class="bi bi-shield-check me-1"></i> Health Status</p>
+                            <p class="mb-0 text-muted small">Financial trajectory is stable. Continue tracking your goals.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-    </div>
+<!-- Prediction-->
+    {% include 'partials/predict.html' %}
 </div>
+
+
+
+
+<!-- Transaction Area  -->
+ <div class="py-2 col-lg-12">
+                <div class="glass-panel container h-90">
+                    {% include "partials/_quick_entry_form.html" %} 
+                </div>
+            </div>
+ 
 {% endblock %}
+
 {% block extra_js %}
 <script>
     const layout = {

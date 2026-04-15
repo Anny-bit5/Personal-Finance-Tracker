@@ -1,0 +1,69 @@
+{% block extra_css %}
+<style>
+.kpi-card{
+    padding:20px;border-radius:16px;color:#fff;
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+    transition:.3s
+}
+.kpi-card:hover{transform:translateY(-4px)}
+.kpi-title{font-size:12px;opacity:.85}
+.kpi-value{font-size:26px;font-weight:700;margin-top:5px}
+
+.primary{background:linear-gradient(135deg,#4e54c8,#8f94fb)}
+.success{background:linear-gradient(135deg,hsl(173, 92%, 30%),#96c93d)}
+.dark{background:linear-gradient(135deg,hsl(286, 61%, 49%),#d083e1)}
+
+.main-card{
+    background:#fff;padding:18px;border-radius:14px;
+    box-shadow:0 5px 18px rgba(0,0,0,.05)
+}
+
+.section-title{font-weight:600;margin-bottom:12px;font-size:14px}
+.data-row{padding:10px 0;border-bottom:1px solid #eee}
+.data-row:last-child{border:none}
+.amount-red{color:#dc3545;font-weight:600}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="glass-panel container  px-3 py-3 text-light">
+    <h3 style="font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;font-weight: bold;"><i class="bi bi-bar-chart-line g-2"></i></i> AI Prediction</h3>
+    <p>Our AI predicts your upcoming spending based on recent financial activity. The confidence level shows how reliable the prediction is, using models like Linear Regression and Random Forest for better accuracy.</p>
+<div class="row g-3 mb-4">
+
+<div class="col-md-4">
+<div class="kpi-card primary">
+<div class="kpi-title">Predicted Spending</div>
+<div class="kpi-value">Rs {{ "%.2f"|format(next_month_pred.prediction|abs) if next_month_pred.prediction else "0.00" }}
+</div>
+<small>Estimated amount you are likely to spend in the upcoming period based on your past financial behavior.</small>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="kpi-card success">
+<div class="kpi-title">Confidence</div>
+<div class="kpi-value">
+{{ next_month_pred.confidence|upper if next_month_pred.confidence else "N/A" }}
+</div>
+<small>Indicates how reliable the prediction is, based on data consistency and pattern stability.</small>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="kpi-card dark">
+<div class="kpi-title">Models Used</div>
+<div style="font-size: large;" class="kpi-value ">Linear Regression + Random Forest</div>
+<small>This forecast is powered by multiple models such as Linear Regression and Random Forest, combined to improve accuracy and reduce prediction errors.</small>
+
+</div>
+</div>
+
+</div>
+
+
+
+
+</div>
+{% endblock %}
+
