@@ -4,9 +4,11 @@
 <style>
     :root { --glass: rgba(194, 47, 121, 0.239); }
     .dashboard-header {
-        background: linear-gradient(135deg, rgb(175, 12, 107),#05065e 10%, #1723a4 65%,rgb(179, 65, 179) 5%, #08988c );
-        padding: 30px 10px 20px 0px; margin-bottom: -20px;
-        border-radius: 0 0 30px 3\0px; color: white; 
+        background-image:url("{{ url_for('static', filename='dashcover.png') }}");  background-size:cover;
+        background-position: left;
+        background-attachment: fixed;
+        padding: 30px 10px 70px 0px; margin-bottom: -60px;
+        border-radius: 0 0 30px 3px; color: white; 
     }
     .glass-panel {
         background: var(--glass); backdrop-filter: blur(20px);
@@ -14,15 +16,14 @@
     }
     /* Adjusted Stat Cards for Header */
     .header-stat-card {
-        background:linear-gradient(150deg,rgb(194, 45, 62),rgb(134, 45, 154)); border-radius: 20px; padding: 15px; color: aliceblue;
+        background:linear-gradient(150deg,rgb(133, 9, 110),rgb(116, 49, 209),rgb(28, 7, 148),rgb(7, 90, 233)); border-radius: 20px; padding: 15px; color: aliceblue;
         transition: 0.3s; border-bottom: 4px solid transparent;
         box-shadow: 0 8px 20px rgba(0,0,0,0.1);
     }
     .header-stat-card h4 { font-size: 1.25rem; font-weight: 800; margin: 0; }
     .header-stat-card span { font-size: 1rem; color: #6c757d; font-weight: 700; }
     
-    .b-income { border-color: #27ae60; } .b-expense { border-color: #e74c3c; }
-    .b-balance { border-color: #3498db; } .b-predict { border-color: #bb9a15; }
+    .b-income ,.b-balance,.b-predict ,.b-expense { border-color: #27ae60; } 
 
     .mini-icon {
         width: 35px; height: 35px; display: flex; align-items: center; 
@@ -49,19 +50,16 @@
         </div>
 
         <div class="row  ">
-            <div style="margin-left: 20px;" class="col-lg-6 ">
+            <div style="margin-left: 10px;" class="col-lg-5 ">
                 <h3 class="fw-bold mb-3">Personal Finance Dashboard</h3>
-                <p class="lead opacity-77  mb-2" style="font-size:16px; max-width: 800px;">
+                <p class="lead  mb-2" style="font-size:15px; max-width: 600px;">
         This dashboard provides a complete overview of your income, expenses, and savings in one place. It helps you track your financial activities, understand spending patterns, and make better budgeting decisions.  With AI-powered insights and forecasting, you can monitor
          your progress and plan ahead with greater accuracy and control.It also highlights key trends, identifies potential savings opportunities, and gives you a clearer picture of your financial health. </p>      <a style="color:white;background-color: rgb(68, 180, 62);" href="{{ url_for('main.reports') }}" class="btn shadow-sm px-4">
                     <i class="bi-pie-chart-fill me-1"></i> View Report
                 </a>
             </div>
             <div class="col-lg-5 text-left">
-        <img src="{{ url_for('static', filename='banner_img.png') }}" 
-             alt="Finance Illustration" 
-             class="img-fluid" 
-             style="max-height:290px; width:370px; margin-left:205px;">
+        
     </div>
           <!--<div class="col-lg-4">
             <div class="card border-0 shadow-sm rounded-4 p-4 h-60">
@@ -167,12 +165,9 @@
     {% include 'partials/predict.html' %}
 </div>
 
-
-
-
 <!-- Transaction Area  -->
- <div class="py-2 col-lg-12">
-                <div class="glass-panel container h-90">
+ <div class="py-1 col-lg-12">
+                <div class="glass-panel container h-90 >
                     {% include "partials/_quick_entry_form.html" %} 
                 </div>
             </div>

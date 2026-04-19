@@ -1,11 +1,22 @@
 {% extends "base.html" %}
 
 {% block title %}Transactions - Finance Tracker{% endblock %}
+{% block extra_css %}
+<style>
+    .cont{
+        background-image:url("{{ url_for('static', filename='trans.png') }}");  background-size:cover;
+        background-position: center;
+        background-attachment: fixed;
+        padding: 30px 10px 270px 0px; margin-bottom: -60px; padding-top:10px;
+    }
+
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid m-0 ">
-    <div style="background: linear-gradient(150deg, #740097d4 0%, #2e68cc 100%);"class="card border-0 shadow-sm mb-1  m-0 text-light">
-        <div class="card-body p-4">
+<div class=" cont container-fluid p-3 ">
+    <div style="background: linear-gradient(150deg, rgb(167, 50, 126),#191283d4 , #ba2ecc );"class="card border-0 shadow-sm mb-1  m-0 text-light">
+        <div class="card-body p-9">
             <form method="GET" action="{{ url_for('main.transactions') }}" class="row g-3 align-items-end">
                 <div class="col-md-2">
                     <label class="form-label small fw-bold text-uppercase text-light">Type</label>
@@ -48,12 +59,8 @@
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead >
-                    <tr class="text-uppercase small fw-bold text-muted">
-                        <th class="ps-4 py-3">Date</th>
-                        <th>Status</th>
-                        <th>Category</th>
-                        <th>Description</th>
-                        <th class="text-end">Amount</th>
+                    <tr class="text-uppercase small fw-bold ">
+    <th class="ps-4 py-3">Date</th>  <th>Status</th>  <th>Category</th>  <th>Description</th>  <th class="text-end">Amount</th>
                         <th class="text-center pe-4">Actions</th>
                     </tr>
                 </thead>

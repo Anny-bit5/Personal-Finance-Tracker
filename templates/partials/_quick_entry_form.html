@@ -1,9 +1,7 @@
 
 {% block extra_css %}
 <style>
-    body{
-       background: linear-gradient(120deg, #10907d 5%, #000d6f 60%,purple 15%, #138354 );
-    }
+    
     /* Modern Form Controls */
     .form-control, .form-select { 
         border-radius: 10px; 
@@ -21,19 +19,11 @@
     /* Custom Radio Button Logic */
     .btn-check:checked + .btn-outline-success { background-color: #198754 !important; color: #fff !important; }
     .btn-check:checked + .btn-outline-danger { background-color: #dc3545 !important; color: #fff !important; }
-    
-    .glass-panel-info {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #fff;
-    }
 
     .info-list { list-style: none; padding-left: 0; }
     .info-list li::before {
         content: "•";
-        color: #ffc107;
+        color: #88690b;
         font-weight: bold;
         display: inline-block; 
         width: 1em;
@@ -41,13 +31,13 @@
     }
 </style>
 {% endblock %}
-
 {% block content %}
-<div class="container px-2 py-2 m-2 mb-0 mt-4">
-    <div class="row g-2 justify-content-center align-items-center">
+<div class="text-light pt-3 m-0">
+    <p> <h5>Quick Transaction Entry :</h5>  To quickly add a transaction, you can enter the amount, category, and description in a simple form, while the date is automatically set in the background. When you submit the form, the system saves your data to the database. This form is placed on the dashboard so you can add transactions easily without opening another page.</p>
+    <div class="row  justify-content-center align-items-center pt-2">
         
-        <div class=" col-lg-4 mx-1">
-            <div style="background: linear-gradient(135deg, #ffffff 0%, #f3f4f7 100%);" class="card shadow-lg p-4">
+        <div class=" col-lg-4 ">
+            <div style="background: linear-gradient(140deg,rgb(219, 219, 251),white,rgb(251, 211, 251));" class="card shadow-lg p-4">
                 <form method="POST" action="{{ url_for('main.add_transaction') }}">
                     <h2 style="background-color:#0d6efd;color: rgb(254, 254, 255); padding: 12px; border-radius: 8px; font-size: 1rem;" class="mb-4 text-center shadow-sm">
                         Quick Entry Transaction Form
@@ -105,25 +95,25 @@
                 </form>
             </div>
         </div>
-        <div class=" col-lg-7 offset-lg-1 m-1">
-            <div class="card glass-panel-info p-2">
+        <div class=" col-lg-8 ">
+            <div  style="background: linear-gradient(140deg,rgb(219, 219, 251),white,rgb(251, 211, 251));" class="card p-2">
                 <div class="card-body">
                     <h5 class=" mb-2 d-flex align-items-center">
-                        <i class="bi bi-folder2-open me-2 text-warning"></i> Transaction Overview
+                    <i>   <i class="bi bi-folder2-open me-2 text-primary"></i> Transaction Overview
                     </h5>
-                    <p class="opacity-75 mb-3" style="line-height: 1.5;">
+                   <p class="mb-3" style="line-height: 1.5;">
                         This section allows you to record and manage your financial activities.   </p>
 
                     <h5 class=" mb-2 d-flex align-items-center">
-                        <i class="bi bi-send-fill me-2 text-warning"></i> Add Transaction </h5>
-                    <p class=" opacity-75 mb-2">Record your data by following these steps:</p>
+                        <i class="bi bi-send-fill me-2 text-primary"></i> Add Transaction </h5>
+                  <p class=" mb-2">Record your data by following these steps:</p> 
                     <ul class="info-list mb-2">
-                        <li>Select <i>Income</i> or <i>Expense</i></li>
-                        <li>Choose a <i>Category</i></li>   <li>Enter the <i>Amount</i></li>
-                        <li>Pick the <i>Date</i></li>  <li>Add <i>Description</i> (optional)</li>
+                    <li>Select Income OR Expense</li>
+                        <li>Choose a <i>Category</i></li>   <li>Enter the Amount</li>
+                        <li>Pick the <i>Date</i></li>  <li>Add Description (optional)</li></i>
                     </ul>
 
-                    <div class="mt-4 pt-3 border-top border-light border-opacity-25">
+                    <div class="mt-2 pt-1 border-top border-light border-opacity-25">
                         <p class="small mb-3 fw-semibold">Click Save Record to store your transaction.</p>
                         <a href="{{ url_for('main.transactions') }}" class="btn btn-primary btn-sm px-4 py-2">
                             Go back to history

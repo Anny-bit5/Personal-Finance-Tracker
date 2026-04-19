@@ -7,6 +7,9 @@
     body{
        background: linear-gradient(120deg, #10907d 5%, #000d6f 60%,purple 15%, #138354 );
     }
+    .imgcontainer{
+         background-image:url("{{ url_for('static', filename='addtrans.png') }}");  background-size:1200px; background-position: left-top;
+        background-attachment: fixed; padding:1px;}
     /* Modern Form Controls */
     .form-control, .form-select { 
         border-radius: 10px; 
@@ -25,32 +28,15 @@
     .btn-check:checked + .btn-outline-success { background-color: #198754 !important; color: #fff !important; }
     .btn-check:checked + .btn-outline-danger { background-color: #dc3545 !important; color: #fff !important; }
     
-    .glass-panel-info {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #fff;
-    }
-
-    .info-list { list-style: none; padding-left: 0; }
-    .info-list li::before {
-        content: "•";
-        color: #ffc107;
-        font-weight: bold;
-        display: inline-block; 
-        width: 1em;
-        margin-left: 1em;
-    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container px-2 py-2 m-2 mb-0 mt-4">
+<div class="imgcontainer  mb-0 ">
     <div class="row g-2 justify-content-center align-items-center">
         
-        <div class=" col-lg-4 mx-1">
-            <div style="background: linear-gradient(135deg, #ffffff 0%, #f3f4f7 100%);" class="card shadow-lg p-4">
+        <div class=" col-lg-5 mt-5 ">
+            <div style="background: linear-gradient(125deg,rgb(180, 180, 246), #fbeafe 0%, #95aef9 100%);" class="card shadow-lg p-4">
                 <form method="POST" action="{{ url_for('main.add_transaction') }}">
                     <div style="background-color: #4e54c8; color: white; padding: 12px; border-radius: 8px; font-size: 0.9rem;" class="mb-4 text-center shadow-sm">
                         Fill in the details to record your finance.
@@ -108,8 +94,9 @@
                 </form>
             </div>
         </div>
-        <div class=" col-lg-7 offset-lg-1 m-1">
-            <div class="card glass-panel-info p-2">
+        <div class=" col-lg-6 offset-lg-1 m-1">
+            <!--
+            <div class="card  p-2">
                 <div class="card-body">
                     <h5 class=" mb-2 d-flex align-items-center">
                         <i class="bi bi-folder2-open me-2 text-warning"></i> Transaction Overview
@@ -134,6 +121,7 @@
                     </div>
                 </div>
             </div>
+            -->
         </div>
         
     </div>

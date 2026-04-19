@@ -4,22 +4,26 @@
 
 {% block extra_css %}
 <style>
-body{
-   background: linear-gradient(120deg, #10907d 5%, #8833a4 60%,rgb(192, 71, 192) 15%, #138354 );
-}
+     .dashboard-header {
+        background-image:url("{{ url_for('static', filename='predict.png') }}");  background-size:cover;
+        background-position: center;
+        background-attachment: fixed;
+        padding: 30px 10px 300px 0px; margin-bottom: -80px; padding-top:10px;
+        border-radius: 0 0 30px 3px; color: white; 
+    }
 .kpi-card{
     padding:20px;border-radius:16px;color:#fff;
     box-shadow:0 8px 20px rgba(0,0,0,.08);
     transition:.3s
 }
 .kpi-card:hover{transform:translateY(-4px)}
+.kpi-title{font-size:14px;font-weight: bolder;}
+.kpi-value{font-size:26px;font-weight:900;margin-top:5px}
+.p{font-style: italic;}
 
-.kpi-title{font-size:12px;opacity:.85}
-.kpi-value{font-size:26px;font-weight:700;margin-top:5px}
-
-.primary{background:linear-gradient(135deg,#4076aa,#8ad7b3)}
-.success{background:linear-gradient(135deg,hsl(173, 92%, 30%),#96c93d)}
-.dark{background:linear-gradient(135deg,#4ec4bc,#89b65d)}
+.primary{background:linear-gradient(135deg,#0c589f,#8e8ad7)}
+.success{background:linear-gradient(135deg,hsl(242, 92%, 30%),#7594f4)}
+.dark{background:linear-gradient(135deg,#2648bb,#b65d84)}
 
 .main-card{
     background:#fff;padding:18px;border-radius:14px;
@@ -38,38 +42,42 @@ body{
 {% endblock %}
 
 {% block content %}
+<div class="dashboard-header"> </div>
 <div class="container py-4">
-
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-4 text-align-center">
         <div class="col-md-4">
             <div class="kpi-card primary">
-                <div class="kpi-title">Predicted Spending</div>
+                <div class="kpi-title">💰Predicted Spending</div>
                 <div class="kpi-value">
                 Rs {{ "%.2f"|format(next_month_pred.prediction|abs) if next_month_pred.prediction else "0.00" }}
                 </div>
+                <p>Estimated amount you are likely to spend in the upcoming period based on your past financial behavior.</p>
             </div>
         </div>
 
         <div class="col-md-4">
             <div class="kpi-card success">
-                <div class="kpi-title">Confidence</div>
+                <div class="kpi-title">📊Confidence</div>
                 <div class="kpi-value">
                 {{ next_month_pred.confidence|upper if next_month_pred.confidence else "N/A" }}
                 </div>
+                <p>The "Confidence" level tells you how predictable your spending is.Indicates how reliable the prediction is, based on data consistency and pattern stability.</p>
             </div>
         </div>
 
         <div class="col-md-4">
             <div class="kpi-card dark">
-                <div class="kpi-title">Models Used</div>
+                <div class="kpi-title">🤖Models Used</div>
                 <div style="font-size: large;" class="kpi-value ">Linear Regression + Random Forest</div>
+           <p>This forecast is powered by multiple models such as Linear Regression and Random Forest, combined to improve accuracy and reduce prediction errors.</p>
+   
             </div>
-        </div>
+                </div>
     </div>
 
     <div class="row g-4">
         <div  class="col-md-3">
-            <div  style="color:white;background:linear-gradient(150deg,rgb(243, 79, 150),rgb(79, 49, 151))"class="main-card h-100">
+            <div  style="color:white;background:linear-gradient(150deg,rgb(53, 6, 193),rgb(120, 52, 197))"class="main-card h-100">
                 <div class="section-title text-light">AI Insights & Methodology</div>
                 
                 <div class="info-header text-light">How it works</div>
@@ -86,9 +94,6 @@ body{
                 <div id="predictionChart" style="height:270px;"></div>
             </div>
         </div>
-
-        
-
         <div class="col-md-3">
             <div class="main-card">
                 <div class="section-title">Future Forecast</div>
