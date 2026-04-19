@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Management</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f7f6; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 10px; shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .data-section { border-bottom: 1px solid #eee; padding: 20px 0; display: flex; justify-content: space-between; align-items: center; }
+        .btn { padding: 10px 20px; border-radius: 5px; text-decoration: none; color: white; font-weight: bold; }
+        .btn-export { background-color: #28a745; } /* Green for CSV/Excel */
+        .btn-system { background-color: #007bff; } /* Blue for Backup/Restore */
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Data Management</h2>
+    <p>Export your transaction history or manage your database backups here.</p>
+
+    <div class="data-section">
+        <div>
+            <h3>Export Reports</h3>
+            <p>Download your financial data for external use.</p>
+        </div>
+        <div>
+            <a href="{{ url_for('export_csv') }}" class="btn btn-export">Download CSV</a>
+            <a href="{{ url_for('export_excel') }}" class="btn btn-export">Download Excel</a>
+        </div>
+    </div>
+
+    <div class="data-section">
+        <div>
+            <h3>Database Actions</h3>
+            <p>Secure your data or restore from a previous state.</p>
+        </div>
+        <div>
+            <a href="{{ url_for('backup_db') }}" class="btn btn-system">Run Backup</a>
+            <form action="{{ url_for('restore_db') }}" method="POST" enctype="multipart/form-data" style="display:inline;">
+                <input type="file" name="backup_file" style="display:none;" id="restoreInput" onchange="this.form.submit()">
+                <button type="button" class="btn btn-system" onclick="document.getElementById('restoreInput').click()">Restore</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

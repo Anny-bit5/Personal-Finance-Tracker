@@ -25,7 +25,7 @@ def dashboard():
     now = datetime.now()
     current_month = get_monthly_summary(current_user.id, now.year, now.month)
     # 1. Calculate or fetch your data
-    # Example data:
+    # data:
     prediction_value = {"prediction": 2934.75, "confidence": "low"}
     
     # Get previous month for comparison

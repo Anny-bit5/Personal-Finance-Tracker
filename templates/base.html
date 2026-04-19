@@ -27,13 +27,13 @@
                 <li class="nav-item"><a class="nav-link" href="{{ url_for('main.reports') }}"><i class="bi bi-graph-up"></i> Reports</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ url_for('main.prediction') }}"><i class="bi bi-cpu"></i> Predictions</a></li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-download"></i> Data</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ url_for('main.export', format='csv') }}"><i class="bi bi-filetype-csv"></i> CSV</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('main.export', format='excel') }}"><i class="bi bi-file-earmark-spreadsheet"></i> Excel</a></li>
+                    <a class="nav-link dropdown-toggle" href="" data-bs-toggle="dropdown"><i class="bi bi-download"></i> Data</a>
+                    <ul class="dropdown-menu  ">
+                        <li><a class="dropdown-item  href="{{ url_for('main.export', format='csv') }}"><i class="bi bi-filetype-csv"></i> CSV</a></li>
+                        <li><a class="dropdown-item " href="{{ url_for('main.export', format='excel') }}"><i class="bi bi-file-earmark-spreadsheet"></i> Excel</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{{ url_for('main.backup') }}"><i class="bi bi-download"></i> Backup</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('main.restore') }}"><i class="bi bi-upload"></i> Restore</a></li>
+                        <li><a class="dropdown-item " href="{{ url_for('main.restore') }}"><i class="bi bi-upload"></i> Restore</a></li>
                     </ul>
                 </li>
             </ul>
@@ -42,8 +42,8 @@
                     <a class="nav-link dropdown-toggle fw-bold" href="#" data-bs-toggle="dropdown">
                         <i class="bi bi-person-circle"></i> {{ current_user.username }}
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    <ul class="dropdown-menu dropdown-menu-end bg-dark">
+                        <li><a class="dropdown-item bg-dark text-light" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
                     </ul>
                 </li>
             </ul>

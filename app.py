@@ -25,7 +25,6 @@ from models import User, Transaction, Category
 from auth import auth_bp
 from routes import main_bp
 
-# Register blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(main_bp)
 
