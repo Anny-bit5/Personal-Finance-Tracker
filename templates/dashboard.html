@@ -2,7 +2,7 @@
 {% block title %}Dashboard - Finance Tracker{% endblock %}
 {% block extra_css %}
 <style>
-    :root { --glass: rgba(194, 47, 121, 0.239); }
+    :root { --glass: rgba(194, 47, 121, 0.239); --forcast:rgba(206, 15, 130, 0.41);}
     .dashboard-header {
         background-image:url("{{ url_for('static', filename='dashcover.png') }}");  background-size:cover;
         background-position: left;
@@ -12,6 +12,10 @@
     }
     .glass-panel {
         background: var(--glass); backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.127); border-radius: 16px;
+    }
+    .forcast {
+        background: var(--forcast); backdrop-filter: blur(20px);
         border: 1px solid rgba(255, 255, 255, 0.127); border-radius: 16px;
     }
     /* Adjusted Stat Cards for Header */
@@ -29,13 +33,41 @@
         width: 35px; height: 35px; display: flex; align-items: center; 
         justify-content: center; border-radius: 10px; font-size: 1rem;color:#492c8f;
     }
+    .why{
+         background-image:url("{{ url_for('static', filename='why.png') }}");  background-size:1300px;
+        background-position: top;
+        background-attachment: fixed;
+        padding: 30px 100px 300px 0px; margin-bottom: -10px; 
+    }
+    /* 1. Animation for cards */
+    @keyframes cardArrival {
+        0% {
+            opacity: 0; transform: translatey(5px); /* Start from lower */
+        }
+        100% {
+            opacity: 1;  transform: translateY(0);    /* End at normal position */
+        }
+    }
+
+    /*  applying in cards */
+    .glass-panel .col-lg-4,  .glass-panel .col-lg-5,   .glass-panel .col-lg-3 ,.baj{
+        opacity: 0;   animation: cardArrival 3s ease-in forwards;   }
+
+    /* (Left card first, then Middle, then Right) */
+    .glass-panel .col-lg-4 ,.glass-panel .col-lg-5, .glass-panel .col-lg-3 ,.baj{ animation-delay: 0.4s; }
+     
 </style>
 {% endblock %}
 
 {% block content %}
+
 <div class="dashboard-header">
-    <div class="container">
-        <div class="glass-panel p-2 mb-4 d-flex justify-content-between align-items-center">
+      <marquee style="color:white" behavior="scroll" direction="right-left">This application is developed as a <strong>CS619 Final Year Project</strong> titled 
+            <span class="text-info">"Personal Finance Tracker with AI Prediction"</span>. 
+            It is designed and maintained by <strong>BC240440713</strong> to provide 
+            intelligent financial insights and automated expense monitoring.</marquee>
+    <div class="container pt-1 px-2">
+        <div class="forcast p-2 mb-4 d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center ps-2">
                 <i class="bi bi-cpu text-light fs-4 me-3"></i>
                 <div>
@@ -44,33 +76,22 @@
                 </div>
             </div>
             <div class="pe-2">
-                <span class="badge rounded-pill bg-success text-light px-3 py-2 me-1">Linear Reg: Rs {{ "%.0f"|format(prediction.lr_prediction|default(0)|abs) }}</span>
-                <span class="badge rounded-pill bg-primary text-light px-3 py-2">Random Forest: Rs {{ "%.0f"|format(prediction.rf_prediction|default(0)|abs) }}</span>
+               <span  class=" baj badge rounded-pill bg-light text-danger px-3 py-2 me-1 fw-bold fs-6"> <i class="bi bi-robot text-primary px-1"></i>Linear Reg: Rs {{ "%.0f"|format(prediction.lr_prediction|default(0)|abs) }}</span>
+                <span class="baj badge rounded-pill bg-light text-success px-3 py-2 fw-bold fs-6"><i class="bi bi-magic text-primary px-1"></i>Random Forest: Rs {{ "%.0f"|format(prediction.rf_prediction|default(0)|abs) }}</span>
             </div>
         </div>
-
-        <div class="row  ">
+        <div class="row  col-lg-12">
             <div style="margin-left: 10px;" class="col-lg-5 ">
                 <h3 class="fw-bold mb-3">Personal Finance Dashboard</h3>
-                <p class="lead  mb-2" style="font-size:15px; max-width: 600px;">
+                <p class="lead  mb-2" style=" opacity: 0; animation: cardArrival 2s ease-in forwards;font-size:15px; max-width: 600px;">
         This dashboard provides a complete overview of your income, expenses, and savings in one place. It helps you track your financial activities, understand spending patterns, and make better budgeting decisions.  With AI-powered insights and forecasting, you can monitor
-         your progress and plan ahead with greater accuracy and control.It also highlights key trends, identifies potential savings opportunities, and gives you a clearer picture of your financial health. </p>      <a style="color:white;background-color: rgb(68, 180, 62);" href="{{ url_for('main.reports') }}" class="btn shadow-sm px-4">
+         your progress and plan ahead with greater accuracy and control.It also highlights key trends, identifies potential savings opportunities, and gives you a clearer picture of your financial health. </p>  
+             <a style="color:white;background-color: rgb(9, 113, 165);" href="{{ url_for('main.reports') }}" class="btn shadow-sm px-4">
                     <i class="bi-pie-chart-fill me-1"></i> View Report
                 </a>
             </div>
-            <div class="col-lg-5 text-left">
-        
-    </div>
-          <!--<div class="col-lg-4">
-            <div class="card border-0 shadow-sm rounded-4 p-4 h-60">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h6 class="fw-bold mb-0">Spending Logic & Trends</h6>
-                    <i class="bi bi-info-circle text-muted"></i>
-                </div>
-                <div id="categoryChart" class="mt-3" style="height: 250px;"></div>
-            </div>
-        </div>-->  
-           
+            <div class="col-lg-5"> </div>
+         
         </div>
     </div>
 </div>
@@ -164,7 +185,48 @@
 <!-- Prediction-->
     {% include 'partials/predict.html' %}
 </div>
+<!-- Why Finance Tracking Matter??????????/-->
+<div class="why  glass-panel p-4 rounded border text-light my-5">
+ <center> <h3>...</h3></center>  
+    <div class="row text-center g-4"> 
+        <div class="col-md-4">
+            <div class="p-3 pt-5">
+                <i class="bi bi-shield-check text-primary fs-1 mb-3"></i>
+                <h5 class="fw-bold">Financial Security</h5>
+                <p style="font-size: 14px;">
+                    Knowing exactly where your money goes helps you build an emergency fund and protect your future from unexpected expenses.
+                </p>
+            </div>
+        </div>
 
+        <div class="col-md-4">
+            <div class="p-3 pt-5">
+                <i class="bi bi-graph-up-arrow text-success fs-1 mb-3"></i>
+                <h5 class="fw-bold">Smart Spending</h5>
+                <p style="font-size: 14px;">
+                    Identify "money leaks" and bad habits. Small daily savings can turn into significant long-term wealth through consistency.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="p-3 pt-5">
+                <i class="bi bi-currency-exchange text-warning fs-1 mb-3"></i>
+                <h5 class="fw-bold">Goal Achievement</h5>
+                <p style="font-size: 14px;">
+                    Whether it's a new car, a home, or a wedding, tracking keeps you accountable to your personal financial milestones.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container glass-panel p-1 rounded border text-light">
+        <p class="mb-2">Want to learn more about importance of finance tracking ?</p>
+        <a href="https://www.glueup.com/blog/financial-tracking-and-reporting" target="_blank" class="text-decoration-none fw-bold text-primary">
+            Visit Now <i class="bi bi-box-arrow-up-right ms-1"></i>
+        </a>
+    </div>
+</div>
 <!-- Transaction Area  -->
  <div class="py-1 col-lg-12">
                 <div class="glass-panel container h-90 >

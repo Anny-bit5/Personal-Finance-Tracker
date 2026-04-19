@@ -6,10 +6,10 @@
 <style>
      .dashboard-header {
         background-image:url("{{ url_for('static', filename='predict.png') }}");  background-size:cover;
-        background-position: left-right;
+        background-position: center;
         background-attachment: fixed;
-        padding: 10px 5px 320px 0px; margin-bottom: -70px; padding-top:5px;
-        border-radius: 0 0 30px 3px; color: white; 
+        padding: 10px 5px 320px 0px; margin-bottom: -60px; padding-top:5px;
+        border-radius: 0 0 30px 3px; color: white;  
     }
 .kpi-card{
     padding:20px;border-radius:16px;color:#fff;
@@ -34,10 +34,32 @@
 .data-row{padding:10px 0;border-bottom:1px solid #eee}
 .data-row:last-child{border:none}
 .amount-red{color:#dc3545;font-weight:600}
+.forecasting{
+     background-image:url("{{ url_for('static', filename='forecast.png') }}");  background-size:1100; 
+        background-position: top;
+        background-attachment: fixed;
+        padding: 10px 30px 0px; 
+        border-radius: 0 0 30px 3px; color: white;  
+}
 
 /* New styling for the info section */
 .info-text { font-size: 13px; color: #666; line-height: 1.5; }
 .info-header { font-size: 15px; color: #4e54c8; font-weight: 600; margin-top: 10px; }
+@keyframes cardArrival {
+        0% {
+            opacity: 0; transform: translatey(5px); /* Start from lower */
+        }
+        100% {
+            opacity: 1;  transform: translateY(0);    /* End at normal position */
+        }
+    }
+
+    /*  applying in cards */
+    .col-md-4 {
+        opacity: 0;   animation: cardArrival 1s ease-in forwards;   }
+
+    /* delay */
+    .col-md-4{ animation-delay: 0.1s; }
 </style>
 {% endblock %}
 
@@ -75,40 +97,36 @@
                 </div>
     </div>
 
-    <div class="row g-4">
-        <div  class="col-md-3">
-            <div  style="color:white;background:linear-gradient(150deg,rgb(53, 6, 193),rgb(120, 52, 197))"class="main-card h-100">
-                <div class="section-title text-light">AI Insights & Methodology</div>
-                
-                <div class="info-header text-light">How it works</div>
-                <p class="info-text text-light">We combine two machine learning models to analyze your patterns. <strong>Linear Regression</strong> identifies your long-term spending trajectory, while <strong>Random Forest</strong> detects complex fluctuations and seasonal habits.</p>
-                
-                <div class="info-header text-light">Understanding Confidence</div>
-                <p class="info-text text-light">The "Confidence" level tells you how predictable your spending is. If you have large, irregular expenses, the confidence will be <strong>LOW</strong>. As your habits stabilize and you log more data, the forecast becomes more reliable.</p>
-                
-                      </div>
+   
+<div class="forecasting">
+            <div class="row col-lg-12">
+        <div class="col-md-3 p-1 mx-3 mt-4">
+             <h2 class="section-title text-center text-light fs-2">Future Forecast</h2>
+             <p class="text-light small mb-4" style="line-height: 1.6;">
+        Our AI-driven forecasting engine analyzes your last 90 days  <br>of financial behavior to project your standing for the next  <br>quarter. 
+        By evaluating recurring bills, <br>seasonal spending habits, and income consistency, this <br>prediction helps you anticipate future savings <br> surpluses or potential deficits. 
+        Use these insights to adjust your budget today and secure your financial roadmap for the months ahead.
+    </p>
         </div>
-        <div class="col-md-6">
+      
+        <div class="col-md-6 mt-4">
             <div class="main-card">
                 <div class="section-title">Spending Trend</div>
-                <div id="predictionChart" style="height:270px;"></div>
+                <div id="predictionChart" style="height:250px;"></div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="main-card">
-                <div class="section-title">Future Forecast</div>
+          <div class="col-md-2 p-1  mt-4"> 
                 {% for pred in predictions_data %}
-                <div class="kpi-card primary mb-2 text-center">
-                    <div style="font-size:12px;opacity:.9">{{ pred.month }}</div>
-                    <div style="font-weight:700">
+                <div class="kpi-card bg-danger  text-light mb-2 text-center p-3">
+                    <div style="font-size:15px;">{{ pred.month }}</div>
+                    <div style="font-weight:600;font-size: 27px;">
                         Rs {{ "%.2f"|format(pred.prediction|abs) }}
                     </div>
                 </div>
                 {% endfor %}
-            </div>
-        </div>
-    </div>
-
+                </div>
+</div>
+</div>
     <div class="row mt-4 g-4">
         <div class="col-md-6">
             <div class="main-card h-100">
@@ -121,8 +139,21 @@
                 {% endfor %}
             </div>
         </div>
-
+        <div  class="col-md-6">
+            <div  style="color:rgb(10, 7, 7);background:linear-gradient(150deg,rgb(224, 217, 248),rgb(251, 218, 237))"class="main-card h-100">
+                <div class="section-title ">AI Insights & Methodology</div>
+                
+                <div class="info-header ">How it works</div>
+                <p class="info-text ">We combine two machine learning models to analyze your patterns. <strong>Linear Regression</strong> identifies your long-term spending trajectory, while <strong>Random Forest</strong> detects complex fluctuations and seasonal habits.</p>
+                
+                <div class="info-header ">Understanding Confidence</div>
+                <p class="info-text ">The "Confidence" level tells you how predictable your spending is. If you have large, irregular expenses, the confidence will be <strong>LOW</strong>. As your habits stabilize and you log more data, the forecast becomes more reliable.</p>
+                
+                      </div>
+        </div>
         
+        
+    </div>
     </div>
 
 </div>
