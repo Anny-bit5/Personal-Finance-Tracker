@@ -4,12 +4,9 @@
 
 {% block extra_css %}
 <style>
-    body{
-       background: linear-gradient(120deg, #10907d 5%, #000d6f 60%,purple 15%, #138354 );
-    }
-    .imgcontainer{
-         background-image:url("{{ url_for('static', filename='addtrans.png') }}");  background-size:1200px; background-position: left-top;
-        background-attachment: fixed; padding:1px;}
+    .imgheader{
+         background-image:url("{{ url_for('static', filename='addtrans.png') }}");  background-size:1200px; background-position: top;
+        background-attachment: fixed; }
     /* Modern Form Controls */
     .form-control, .form-select { 
         border-radius: 10px; 
@@ -32,18 +29,16 @@
 {% endblock %}
 
 {% block content %}
-<div class="imgcontainer  mb-0 ">
-    <div class="row g-2 justify-content-center align-items-center">
-        
+<div class="container-fluid imgheader  mx-0 py-3 ">
+    <div class="row col-lg-12 mx-0 justify-content-center align-items-center">
         <div class=" col-lg-5 mt-5 ">
-            <div style="background: linear-gradient(125deg,rgb(180, 180, 246), #fbeafe 0%, #95aef9 100%);" class="card shadow-lg p-4">
+            <div style="background: linear-gradient(125deg,rgb(202, 202, 254), #fbeafe 0%, #c5d3fc 100%);" class="card shadow-lg p-4">
                 <form method="POST" action="{{ url_for('main.add_transaction') }}">
-                    <div style="background-color: #4e54c8; color: white; padding: 12px; border-radius: 8px; font-size: 0.9rem;" class="mb-4 text-center shadow-sm">
+                    <div style="background-color: #4e54c8; color: white; padding:5px; border-radius: 8px; font-size: 19px;" class="mb-4 text-center shadow-sm">
                         Fill in the details to record your finance.
                     </div>
-
                     <div class="mb-2">
-                        <label class="form-label fw-bold small text-uppercase text-secondary">Transaction Type</label>
+                        <label class="form-label fw-bold text-uppercase">Transaction Type</label>
                         <div class="d-flex gap-3">
                             <input type="radio" class="btn-check" name="type" id="income" value="income" autocomplete="off" required>
                             <label class="btn btn-outline-success w-100 py-2 fw-bold" for="income">
@@ -56,11 +51,10 @@
                             </label>
                         </div>
                     </div>
-
-                    
+ 
                     <div class="row col-lg-12">
                         <div class="col-md-6 mb-2">
-                        <label class="form-label fw-bold small text-secondary text-uppercase">Category</label>
+                        <label class="form-label fw-bold  text-uppercase">Category</label>
                         <select class="form-select" name="category_id" required>
                             <option value="" disabled selected>Choose...</option>
                             {% for category in categories %}
@@ -68,7 +62,7 @@
                             {% endfor %}
                         </select> </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold small text-secondary text-uppercase">Amount</label>
+                            <label class="form-label fw-bold  text-uppercase">Amount</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-white border-end-0">Rs</span>
                                 <input type="number" step="0.01" class="form-control border-start-0" name="amount" placeholder="0.00" required>
@@ -77,12 +71,12 @@
                     </div>
                    <div class="row">
                      <div class="col-md-5">
-                            <label class="form-label fw-bold small text-secondary text-uppercase">Date</label>
+                            <label class="form-label fw-bold  text-uppercase">Date</label>
                             <input type="date" class="form-control" id="date" name="date" required>
                         </div>
 
                     <div class="col-md-6 mb-2">
-                        <label class="form-label fw-bold small text-secondary text-uppercase">Description</label>
+                        <label class="form-label fw-bold  text-uppercase">Description</label>
                         <textarea class="form-control" name="description" rows="1" placeholder="Optional notes..."></textarea>
                     </div>
 
@@ -126,7 +120,6 @@
         
     </div>
 </div>
-
 <script>
     document.getElementById('date').valueAsDate = new Date();
 </script>

@@ -4,9 +4,7 @@
 <style>
     :root { --glass: rgba(194, 47, 121, 0.239); --forcast:rgba(206, 15, 130, 0.41);}
     .dashboard-header {
-        background-image:url("{{ url_for('static', filename='dashcover.png') }}");  background-size:cover;
-        background-position: left;
-        background-attachment: fixed;
+        background-image:url("{{ url_for('static', filename='dashcover.png') }}");  background-size:cover; background-position: left; background-attachment: fixed;
         padding: 30px 10px 70px 0px; margin-bottom: -60px;
         border-radius: 0 0 30px 3px; color: white; 
     }
@@ -27,7 +25,7 @@
     .header-stat-card h4 { font-size: 1.25rem; font-weight: 800; margin: 0; }
     .header-stat-card span { font-size: 1rem; color: #6c757d; font-weight: 700; }
     
-    .b-income ,.b-balance,.b-predict ,.b-expense { border-color: #27ae60; } 
+    .b-income ,.b-balance,.b-predict ,.b-expense { border-color: #27ae60;} 
 
     .mini-icon {
         width: 35px; height: 35px; display: flex; align-items: center; 
@@ -37,7 +35,7 @@
          background-image:url("{{ url_for('static', filename='why.png') }}");  background-size:1300px;
         background-position: top;
         background-attachment: fixed;
-        padding: 30px 100px 300px 0px; margin-bottom: -10px; 
+        padding: 30px 100px 300px 0px; 
     }
     /* 1. Animation for cards */
     @keyframes cardArrival {
@@ -55,7 +53,9 @@
 
     /* (Left card first, then Middle, then Right) */
     .glass-panel .col-lg-4 ,.glass-panel .col-lg-5, .glass-panel .col-lg-3 ,.baj{ animation-delay: 0.4s; }
-     
+     .imgheader{
+         background-image:url("{{ url_for('static', filename='addtrans.png') }}");  background-size:1200px; background-position: top;
+        background-attachment: relative; margin-left: 2px; }
 </style>
 {% endblock %}
 
@@ -71,13 +71,12 @@
             <div class="d-flex align-items-center ps-2">
                 <i class="bi bi-cpu text-light fs-4 me-3"></i>
                 <div>
-                    <h6 class="mb-0 fw-bold">AI Financial Insight</h6>
-                    <small class="opacity-75">Ensemble Prediction Active</small>
+                    <h6 class="mb-0 fw-bold">AI Financial Insight</h6> <small class="opacity-75">Ensemble Prediction Active</small>
                 </div>
             </div>
             <div class="pe-2">
-               <span  class=" baj badge rounded-pill bg-light text-danger px-3 py-2 me-1 fw-bold fs-6"> <i class="bi bi-robot text-primary px-1"></i>Linear Reg: Rs {{ "%.0f"|format(prediction.lr_prediction|default(0)|abs) }}</span>
-                <span class="baj badge rounded-pill bg-light text-success px-3 py-2 fw-bold fs-6"><i class="bi bi-magic text-primary px-1"></i>Random Forest: Rs {{ "%.0f"|format(prediction.rf_prediction|default(0)|abs) }}</span>
+             <span  class=" baj badge rounded-pill bg-light text-danger px-3 py-2 me-1 fw-bold fs-6"> <i class="bi bi-robot text-primary px-1"></i>Linear Reg: Rs {{ "%.0f"|format(prediction.lr_prediction|default(0)|abs) }}</span>
+            <span class="baj badge rounded-pill bg-light text-success px-3 py-2 fw-bold fs-6"><i class="bi bi-magic text-primary px-1"></i>Random Forest: Rs {{ "%.0f"|format(prediction.rf_prediction|default(0)|abs) }}</span>
             </div>
         </div>
         <div class="row  col-lg-12">
@@ -90,8 +89,6 @@
                     <i class="bi-pie-chart-fill me-1"></i> View Report
                 </a>
             </div>
-            <div class="col-lg-5"> </div>
-         
         </div>
     </div>
 </div>
@@ -103,13 +100,13 @@
                         {'label': 'AI Forecast', 'val': prediction.prediction|abs, 'class': 'b-predict', 'icon': 'bi-stars', 'color': 'text-dark', 'bg': 'white'}
                     ] %}
                     {% for item in metrics %}
-                    <div class="col-3">
+                    <div class="col-md-3">
                         <div class="header-stat-card {{ item.class }}">
                             <div class=" h-60 d-flex align-items-center mb-3">
-                                <div class="mini-icon me-2" style="background: {{ item.bg }}; color: {{ item.color }}">
+                                <div class="mini-icon me-2" style="background:rgb(252, 161, 217);">
                                     <i class="bi {{ item.icon }}"></i>
                                 </div>
-                                <span style="color:aliceblue">{{ item.label }}</span>
+                                <span style="color:rgb(242, 248, 134)">{{ item.label }}</span>
                             </div>
                             <h4 class="text-light">Rs {{ "%.0f"|format(item.val) }}</h4>
                         </div>
@@ -229,7 +226,7 @@
 </div>
 <!-- Transaction Area  -->
  <div class="py-1 col-lg-12">
-                <div class="glass-panel container h-90 >
+                <div class="imgheader h-90 >
                     {% include "partials/_quick_entry_form.html" %} 
                 </div>
             </div>

@@ -2,7 +2,7 @@
 body {
     margin-top:25px;padding-top: 10px;
     background: linear-gradient(140deg, #1849bc , #a90d63 ,rgb(13, 13, 112),rgb(232, 116, 145), #4818b0 100%);
-    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; color: #333;  
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; color: #333;  margin-left:0px;
 }
 h1,h2,h3,h4,h5{
     font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;font-weight: bold;
@@ -10,10 +10,7 @@ h1,h2,h3,h4,h5{
 
 /* 2. Navbar & Branding */
 .navbar{
-   position: fixed;
-   top:0;
-   width:100%;
-   z-index:1000;
+   position: fixed;  top:0; width:100%; z-index:1000;
 }
 .navbar-brand {
     font-weight: bold; font-size: 1.5rem;
@@ -29,7 +26,6 @@ h1,h2,h3,h4,h5{
 /* app label   */
 .brand-text {
     font-weight: 500;
-    
 }
 
 /* 3. Money Icon & Animations */

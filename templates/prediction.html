@@ -17,9 +17,9 @@
     transition:.3s
 }
 .kpi-card:hover{transform:translateY(-4px)}
-.kpi-title{font-size:14px;font-weight: bolder;}
-.kpi-value{font-size:26px;font-weight:900;margin-top:5px}
-.p{font-style: italic;}
+.kpi-title{font-size:14px;font-weight: bolder; color:#fe6da9}
+.kpi-value{font-size:26px;font-weight:900;margin-top:5px ;color:rgb(229, 244, 16)}
+p{font-style: italic; color:rgb(227, 225, 225);font-family: verdana; font-size:small}
 
 .primary{background:linear-gradient(135deg,#0c589f,#8e8ad7)}
 .success{background:linear-gradient(135deg,hsl(242, 92%, 30%),#7594f4)}
@@ -69,7 +69,7 @@
     <div class="row g-3 mb-4 text-align-center">
         <div class="col-md-4">
             <div class="kpi-card primary">
-                <div class="kpi-title">💰Predicted Spending</div>
+                <div class="kpi-title"><i class="bi bi-cash-stack  fs-6">  Predicted Spending</i></div>
                 <div class="kpi-value">
                 Rs {{ "%.2f"|format(next_month_pred.prediction|abs) if next_month_pred.prediction else "0.00" }}
                 </div>
@@ -79,17 +79,17 @@
 
         <div class="col-md-4">
             <div class="kpi-card success">
-                <div class="kpi-title">📊Confidence</div>
+                <div class="kpi-title"><i class="bi bi-bar-chart-fill fs-6"> Confidence</i>  </div>
                 <div class="kpi-value">
                 {{ next_month_pred.confidence|upper if next_month_pred.confidence else "N/A" }}
                 </div>
-                <p>The "Confidence" level tells you how predictable your spending is.Indicates how reliable the prediction is, based on data consistency and pattern stability.</p>
+                <p>The "Confidence" level tells you how predictable your spending is.Indicates how reliable the prediction is, based on data consistency .</p>
             </div>
         </div>
 
         <div class="col-md-4">
             <div class="kpi-card dark">
-                <div class="kpi-title">🤖Models Used</div>
+                <div class="kpi-title"><i class="bi bi-robot  fs-6"> Models Used</i></div>
                 <div style="font-size: large;" class="kpi-value ">Linear Regression + Random Forest</div>
            <p>This forecast is powered by multiple models such as Linear Regression and Random Forest, combined to improve accuracy and reduce prediction errors.</p>
    

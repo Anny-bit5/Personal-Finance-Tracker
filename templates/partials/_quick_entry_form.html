@@ -1,7 +1,7 @@
 
 {% block extra_css %}
 <style>
-    
+     
     /* Modern Form Controls */
     .form-control, .form-select { 
         border-radius: 10px; 
@@ -32,10 +32,9 @@
 </style>
 {% endblock %}
 {% block content %}
-<div class="text-light pt-3 m-0">
+<div class=" text-light p-3 m-0">
     <p> <h5>Quick Transaction Entry :</h5>  To quickly add a transaction, you can enter the amount, category, and description in a simple form, while the date is automatically set in the background. When you submit the form, the system saves your data to the database. This form is placed on the dashboard so you can add transactions easily without opening another page.</p>
     <div class="row  justify-content-center align-items-center pt-2">
-        
         <div class=" col-lg-4 ">
             <div style="background: linear-gradient(140deg,rgb(219, 219, 251),white,rgb(251, 211, 251));" class="card shadow-lg p-4">
                 <form method="POST" action="{{ url_for('main.add_transaction') }}">
@@ -96,7 +95,7 @@
             </div>
         </div>
         <div class=" col-lg-8 ">
-            <div  style="background: linear-gradient(140deg,rgb(219, 219, 251),white,rgb(251, 211, 251));" class="card p-2">
+            <div  class="glass-panel p-2">
                 <div class="card-body">
                     <h5 class=" mb-2 d-flex align-items-center">
                     <i>   <i class="bi bi-folder2-open me-2 text-primary"></i> Transaction Overview

@@ -9,7 +9,7 @@
         background-image:url("{{ url_for('static', filename='report.png') }}");  background-size:cover;
         background-position: center;
         background-attachment: fixed;
-        padding: 30px 20px 80px 50px; margin-bottom: -60px;  padding-top:30px;
+        padding: 30px 20px 90px 50px; margin-bottom: -50px;  padding-top:30px; margin-top:20px;
         border-radius: 0 0 30px 3px; color: white; 
     }  .chart-container {
         min-height: 300px;
@@ -26,8 +26,8 @@
 
 {% block content %}
 <div class="report-header d-flex flex-wrap justify-content-between align-items-center gap-3">
-    <div class="row col-lg-12"> <div class="col-lg-7">
-        <h3 class="mb-2 fw-bold"><i class="bi bi-pie-chart-fill me-2 fs-4"></i>Financial Reports</h3>
+    <div class="row col-lg-12 "> <div class="col-lg-7">
+        <h4 class="mb-2 fw-bold"><i class="bi bi-pie-chart-fill me-2 fs-4 mt-5 "></i>Financial Reports</h4>
         <p style="font-size:13px;" class="mb-0 ">This section provides a clear overview of your  wealth performance by showing your income, expenses, and spending patterns. It helps you understand  where your money goes and whether you are saving or overspending. This makes it easier for you to manage your  budget and make better financial decisions.</p>
     </div>
     <div class="col-lg-5  p-2 rounded-3 shadow-sm">
