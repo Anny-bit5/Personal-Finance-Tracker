@@ -8,6 +8,9 @@
         padding: 30px 10px 70px 0px; margin-bottom: -60px;
         border-radius: 0 0 30px 3px; color: white; 
     }
+    .card{
+        background-color: rgb(253, 209, 216);
+    }
     .glass-panel {
         background: var(--glass); backdrop-filter: blur(20px);
         border: 1px solid rgba(255, 255, 255, 0.127); border-radius: 16px;
@@ -60,12 +63,9 @@
 {% endblock %}
 
 {% block content %}
-
 <div class="dashboard-header">
-      <marquee style="color:white" behavior="scroll" direction="right-left">This application is developed as a <strong>CS619 Final Year Project</strong> titled 
-            <span class="text-info">"Personal Finance Tracker with AI Prediction"</span>. 
-            It is designed and maintained by <strong>BC240440713</strong> to provide 
-            intelligent financial insights and automated expense monitoring.</marquee>
+      <marquee style="color:white" behavior="scroll" direction="right-left">
+            It is designed and maintained by <strong>BC240440713</strong> to provide  intelligent financial insights and automated expense monitoring.</marquee>
     <div class="container pt-1 px-2">
         <div class="forcast p-2 mb-4 d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center ps-2">
@@ -102,13 +102,12 @@
                     {% for item in metrics %}
                     <div class="col-md-3">
                         <div class="header-stat-card {{ item.class }}">
-                            <div class=" h-60 d-flex align-items-center mb-3">
-                                <div class="mini-icon me-2" style="background:rgb(252, 161, 217);">
-                                    <i class="bi {{ item.icon }}"></i>
-                                </div>
-                                <span style="color:rgb(242, 248, 134)">{{ item.label }}</span>
-                            </div>
-                            <h4 class="text-light">Rs {{ "%.0f"|format(item.val) }}</h4>
+             <div class=" h-60 d-flex align-items-center mb-3">
+                <div class="mini-icon me-2" style="background:rgb(255, 195, 232);"><i class="bi {{ item.icon }}"></i>
+                  </div>
+             <span style="color:rgb(245, 255, 51)">{{ item.label }}</span>
+                </div>
+             <h4 class="text-light">Rs {{ "%.0f"|format(item.val) }}</h4>
                         </div>
                     </div>
                     {% endfor %}
@@ -121,9 +120,9 @@
     <div class="row g-3">
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm rounded-4 h-90 overflow-hidden">
-                <div class="bg-light p-4 border-bottom d-flex justify-content-between align-items-center">
+                <div class=" p-4 border-bottom d-flex justify-content-between align-items-center">
                     <h6 class="fw-bold mb-0">Recent Activity</h6>
-                    <a href="{{ url_for('main.transactions') }}" class="btn btn-sm btn-outline-primary border-0">See All</a>
+                    <a href="{{ url_for('main.transactions') }}" class="btn btn-sm btn-secondary border-0">See All</a>
                 </div>
                 <div class="list-group list-group-flush">
                     {% for transaction in recent_transactions[:5] %}
@@ -162,17 +161,18 @@
                 <div class="card-body">
                     <div class="d-flex flex-column gap-3">
                         <div class="p-2 rounded bg-light border-start border-success border-4">
-                            <p class="mb-1 fw-bold text-success small"><i class="bi bi-wallet2 me-1"></i> Savings Surplus</p>
-                            <p class="mb-0 text-muted small">Your income significantly exceeds your spending this month.</p>
-                        </div>
-                        <div class="p-2 rounded bg-light border-start border-primary border-4">
-                            <p class="mb-1 fw-bold text-primary small"><i class="bi bi-cart-check me-1"></i> Top Category</p>
-                            <p class="mb-0 text-muted small">Education is your largest expense share at 40.8%.</p>
-                        </div>
-                        <div class="p-2 rounded bg-light border-start border-info border-4">
-                            <p class="mb-1 fw-bold text-info small"><i class="bi bi-shield-check me-1"></i> Health Status</p>
-                            <p class="mb-0 text-muted small">Financial trajectory is stable. Continue tracking your goals.</p>
-                        </div>
+                    <p class="mb-1 fw-bold text-success small"><i class="bi bi-wallet2 me-1"></i> Savings Surplus</p>
+                    <p class="mb-0 text-muted small">A Savings Surplus occurs when your total income exceeds your actual expenses over a specific period.</p>
+                </div>
+                       <div class="p-2 rounded bg-light border-start border-primary border-4">
+                    <p class="mb-1 fw-bold text-primary small"><i class="bi bi-cart-check me-1"></i> Top Category</p>
+                    <p class="mb-0 text-muted small">Your expense distribution reveals that the largest portion of your budget 
+    is currently allocated to this specific category. </p>
+                </div>
+                <div class="p-2 rounded bg-light border-start border-info border-4">
+                    <p class="mb-1 fw-bold text-info small"><i class="bi bi-shield-check me-1"></i> Health Status</p>
+                    <p class="mb-0 text-muted small">A Health Status indicator in a financial context provides an immediate diagnostic view of your fiscal well-being.</p>
+                </div>
                     </div>
                 </div>
             </div>

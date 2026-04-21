@@ -33,11 +33,12 @@ def dashboard():
     # Get current date
     now = datetime.now()
     
-    # 1. Get the dictionary from the prediction model
+    # Get the dictionary from the prediction model
     raw_data = predict_next_month_expense(current_user.id)
-    
-    # 2. Extract the actual number from the dictionary
-    # We look for the key 'prediction' inside the dictionary
+     # Initialize the variable at the top!
+    prediction_value = 0  
+
+    # Extract the actual number from the dictionary
     if isinstance(raw_data, dict):
         actual_number = raw_data.get('prediction', 0)
         conf_level = raw_data.get('confidence', 'N/A')
@@ -45,13 +46,11 @@ def dashboard():
         # If the model just returned a number directly
         actual_number = raw_data if raw_data else 0
         conf_level = "Normal"
-
-    # 3. Now it is safe to use float() and round()
-    prediction_value = {
+        prediction_value = {
         "prediction": round(float(actual_number), 2),
         "confidence": conf_level
     }
-    # --- Rest of your existing logic ---
+    # --- Rest of  existing logic ---
     current_month = get_monthly_summary(current_user.id, now.year, now.month)
     
     if now.month == 1:
@@ -71,10 +70,12 @@ def dashboard():
     # 1. Prepare data for the models
     X, y = prepare_training_data(current_user.id, 12)
     
-    # Defaults in case there isn't enough data
+    # Defaults value
     lr_val = 0
     rf_val = 0
     final_pred = 0
+
+
 
     if X is not None and len(X) >= 3:
         # 2. Train and get Linear Regression result
@@ -87,13 +88,14 @@ def dashboard():
         
         final_pred = (lr_val + rf_val) / 2
 
-    # 4. Create the dictionary with the names your HTML is looking for
+    # 4. Create the dictionary with the names our HTML is looking for
     prediction_data = {
         "prediction": final_pred,
         "lr_prediction": lr_val,
         "rf_prediction": rf_val,
-        "confidence": "High" if len(X) > 5 else "Low"
-    }
+       "confidence": "High" if (X is not None and len(X) > 5) else ("Low" if (X is not None and len(X) >= 3) else "No Data")
+}
+
     return render_template('dashboard.html',
                            next_month_pred=prediction_value, 
                            # Now uses real AI data     
@@ -105,7 +107,8 @@ def dashboard():
                            category_values=category_values,
                            recent_transactions=recent_transactions,
                            trend_labels=trend_labels,
-                           trend_values=trend_values
+                           trend_values=trend_values,
+                    
                            )
 from flask import flash, redirect, url_for, current_app
 from models import db, User, Transaction # Ensure db and models are imported
