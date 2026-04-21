@@ -104,8 +104,7 @@ def dashboard():
     }
     return render_template('dashboard.html',
                            next_month_pred=prediction_value, 
-                           # Now uses real AI data
-                           
+                           # Now uses real AI data     
                            prediction=prediction_data,
                            current_month=current_month,
                            prev_month=prev_month,
@@ -116,7 +115,45 @@ def dashboard():
                            trend_labels=trend_labels,
                            trend_values=trend_values
                            )
+from flask import flash, redirect, url_for, current_app
+from models import db, User, Transaction # Ensure db and models are imported
+
+# Route to delete a user
+@main_bp.route('/del_user/<int:user_id>')
+def del_user(user_id):
+    user_to_delete = User.query.get_or_404(user_id)
+    db.session.delete(user_to_delete)
+    db.session.commit()
+    flash(f"User {user_to_delete.username} has been deleted.", "success")
+    return redirect(url_for('main.admin'))
+
+# Route to delete a single transaction
+@main_bp.route('/del_transaction/<int:t_id>')
+def del_transaction(t_id):
+    t_to_delete = Transaction.query.get_or_404(t_id)
+    db.session.delete(t_to_delete)
+    db.session.commit()
+    flash("Transaction deleted successfully.", "info")
+    return redirect(url_for('main.admin'))
+@main_bp.route('/admin')
+def admin():
+    from models import User, Transaction  # Add Transaction here
+    # Security Check: Only allow if the user is an admin
+    # Fetch data for the admin to see
+    all_users = User.query.all()
+    # Fetch all transactions to show in the table
+    all_transactions = Transaction.query.all()
+    total_users = len(all_users)
+
+    total_t = Transaction.query.count()# Total records in system
+
+    return render_template('admin.html', users=all_users,transactions=all_transactions, total_u=total_users, total_t=total_t)
+@main_bp.route('/download')
+@login_required
+def download():
+    return render_template('download.html')
 # The page that lists all transactions with filters
+
 @main_bp.route('/transactions')
 @login_required
 def transactions():
@@ -653,3 +690,4 @@ def chart_data():
         })
     
     return jsonify({'error': 'Invalid chart type'}), 400
+

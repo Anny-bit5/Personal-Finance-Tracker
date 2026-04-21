@@ -62,7 +62,15 @@ with app.app_context():
     
     # save all the new categories permanently 
     db.session.commit()
+@app.route('/admin-portal')
+def admin_portal():
+    # Security Check: Only allow if the user is an admin
+    # Fetch data for the admin to see
+    all_users = User.query.all()
+    total_users = len(all_users)
+    total_expenses = Expense.query.count() # Total records in system
 
+    return render_template('admin.html', users=all_users, total_u=total_users, total_e=total_expenses)
 # 5. starting the app
 if __name__ == '__main__':
     # runs the website on port 5001 so you can see it in your browser

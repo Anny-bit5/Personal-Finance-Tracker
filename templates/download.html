@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+ {% block extra_css %}
+ <style>
+    .header {
+        background-image:url("{{ url_for('static', filename='download.png') }}");  background-size:cover;
+        background-position: top; background-attachment: fixed;
+        padding: 30px 20px 50px 50px; margin-bottom: -60px;  padding-top:30px; margin-top:20px;
+        border-radius: 0 0 30px 3px; color: white; }
+        .export{
+            width:90%;  background-color: rgba(77, 12, 137, 0.474); backdrop-filter: (20px);   margin-left: 60px;  }
+        .card{ background-color: rgba(255, 209, 231, 0.971); backdrop-filter: (20px); }
+ </style>
+ {% endblock %}
+{% block content %}
+<div>
+    <div class="header"> <div class="text-center mb-2">
+        <h2 class="fw-bold text-light">Export Your Financial Data</h2>
+        <p class=" text-light">Take your data with you. Choose a format that fits your needs.</p>
+    </div></div>
+   
+
+    <div class="row g-4 mx-5 mb-2">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-1">
+                <div class="card-body text-center">
+                    <div class="mb-3 text-primary">
+                        <i class="bi bi-filetype-csv fs-1"></i>
+                    </div>
+                    <h5 class="card-title">Spreadsheet (CSV)</h5>
+                    <p class="card-text text-muted small">Best for basic data analysis in Google Sheets or Excel. Simple and lightweight.</p>
+                    <a href="{{ url_for('main.export', format='csv') }}" class="btn btn-primary w-100 mt-3">Download .CSV</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-dark border-3">
+                <div class="card-body text-center">
+                    <div class="mb-3 text-success"><i class="bi bi-file-earmark-excel fs-1"></i> </div>
+                    <h5 class="card-title ">Microsoft Excel</h5>
+                    <p class="card-text text-muted small">Professional format with headers and formatting included. Ideal for printing reports.</p>
+                    <a href="{{ url_for('main.export', format='excel') }}" class="btn btn-success w-100 mt-3">Download .XLSX</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="mb-3 text-primary">
+                        <i class="bi bi-database-fill-gear fs-1"></i>
+                    </div>
+                    <h5 class="card-title">System Backup</h5>
+                    <p class="card-text text-muted small">A full technical backup of your account. Use this to restore your data later.</p>
+                    <a href="{{ url_for('main.backup') }}" class="btn btn-primary w-100 mt-3">Download .JSON</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="export mt-3 px-3 py-1 text-light rounded">
+        <h5><i class="bi bi-info-circle me-2"></i>Why export?</h5>
+        <ul>
+            <li>Keep a permanent record of your spending habits offline.Use the CSV data to create your own custom charts in other software.</li>
+            <li>The JSON backup ensures you never lose your data if you move to a new device.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
