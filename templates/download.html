@@ -7,7 +7,7 @@
         padding: 30px 20px 50px 50px; margin-bottom: -60px;  padding-top:30px; margin-top:20px;
         border-radius: 0 0 30px 3px; color: white; }
         .export{
-            width:90%;  background-color: rgba(77, 12, 137, 0.474); backdrop-filter: (20px);   margin-left: 60px;  }
+              background-color: rgba(253, 201, 239, 0.92); padding-top:10px; color:black;margin:15px; }
         .card{ background-color: rgba(255, 209, 231, 0.971); backdrop-filter: (20px); }
  </style>
  {% endblock %}
@@ -57,13 +57,37 @@
             </div>
         </div>
     </div>
-
-    <div class="export mt-3 px-3 py-1 text-light rounded">
-        <h5><i class="bi bi-info-circle me-2"></i>Why export?</h5>
+<div class="row justify-content-center mt-2">
+     <div class="col-md-7 p-4">
+        <div class="card shadow-sm">
+            <div class="row card-header">
+                <h4 class="col-md-11 mb-0"><i class="bi bi-upload"></i> Restore Backup</h4>
+<a class="col-md-1" href="{{ url_for('main.dashboard') }}" ><i class="bi bi-x fs-4"></i></a>
+            </div>
+            <div class="card-body ">
+  <div > <i class="bi bi-info-circle"></i> Select a backup JSON file to restore your transactions.   Duplicate transactions will be skipped.
+                </div>
+                <form style="padding:5px; margin-bottom: 6px;" method="POST" action="{{ url_for('main.restore') }}" enctype="multipart/form-data">
+         <div class="mb-3">
+             <label for="backup_file" class="form-label">Backup File:</label>
+              <input type="file" class="form-control " id="backup_file" name="backup_file"   accept=".json" required>
+         </div>
+  <div class="row col-md-12 g-3">
+ <button  class="col-md-3 btn btn-primary mx-5 " type="submit">Restore</button> 
+  <a style="margin-left:90px;"class="col-md-3 text-center btn btn-success" href="{{ url_for('main.backup') }}" >   <i class="bi bi-download"></i> Create Now  </a>
+                    </div>
+                </form>         
+            </div>
+        </div>
+    </div>]
+    <div class="export col-md-4 mt-6 px-3 rounded">
+        <h5><i class="bi bi-info-circle "></i>Why export?</h5>
         <ul>
-            <li>Keep a permanent record of your spending habits offline.Use the CSV data to create your own custom charts in other software.</li>
+            <li>Keep a permanent record of your spending habits offline.</li>
+                <li>Use the CSV data to create your own custom charts in other software.</li>
             <li>The JSON backup ensures you never lose your data if you move to a new device.</li>
         </ul>
     </div>
+
 </div>
 {% endblock %}

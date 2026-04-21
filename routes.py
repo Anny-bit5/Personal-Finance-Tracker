@@ -1,22 +1,14 @@
 # Import tools to build the web app
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file
-# Import tools to handle user login and security
 from flask_login import login_required, current_user
-# Import the database structures (tables) for transactions, categories, and users
 from models import db, Transaction, Category, User
-# Import tools to work with dates and time
 from datetime import datetime, timedelta
-# Import custom helper functions for math and summaries
 from utils import get_monthly_summary, get_category_breakdown, get_yearly_summary
-# Import machine learning tools to predict future spending
 from prediction import predict_next_month_expense, get_expense_trend
-# Import data processing libraries (Pandas and Numpy)
 import pandas as pd
 import numpy as np
-# Import tools for handling JSON files and system paths
 import json
 import os
-# Import tools to handle data in memory (like creating files for download)
 import io
 
 # Create a 'Blueprint' to organize the main routes of the app
@@ -28,7 +20,7 @@ def index():
     # If the user is already logged in, send them to the dashboard
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
-    # If not logged in, send them to the login page
+    # If not logged in then redirect them to login page
     return redirect(url_for('auth.login'))
 
 # The main Dashboard page

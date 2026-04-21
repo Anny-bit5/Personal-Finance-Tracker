@@ -14,7 +14,7 @@ A Python-based web application for managing personal finances with machine learn
 - **Data Export**: Export to CSV or Excel format
 - **Backup & Restore**: Backup and restore user data
 
-## Tech Stack
+## Tools
 
 - **Backend**: Flask (Python)
 - **Database**: SQLite
@@ -26,19 +26,17 @@ A Python-based web application for managing personal finances with machine learn
 
 1. Navigate to the project directory:
 ```bash
-cd transaction_project
+cd Personal Finance Tracker App
 ```
 
 2. Create a virtual environment (recommended):
 ```bash
 python -m venv venv
 venv\Scripts\activate  # On Windows
-# or
-source venv/bin/activate  # On Linux/Mac
-```
+
 
 3. Install dependencies:
-```bash
+```
 pip install -r requirements.txt
 ```
 
@@ -47,10 +45,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-5. Open your browser and navigate to:
-```
-http://localhost:5000
-```
+5. Open your browser and navigate to:  ''http://localhost:5000''
 
 6. Register a new account and start tracking your finances!
 
@@ -72,35 +67,7 @@ http://localhost:5000
 4. Check visualizations and predictions
 5. Export data when needed
 
-## Project Structure
 
-```
-transaction_project/
-├── app.py                 # Main Flask application
-├── models.py              # Database models
-├── auth.py                # Authentication routes
-├── routes.py              # Main application routes
-├── prediction.py          # ML prediction module
-├── utils.py               # Utility functions
-├── requirements.txt       # Python dependencies
-├── templates/             # HTML templates
-│   ├── base.html
-│   ├── login.html
-│   ├── register.html
-│   ├── dashboard.html
-│   ├── transactions.html
-│   ├── add_transaction.html
-│   ├── reports.html
-│   └── export.html
-├── static/                # Static files
-│   ├── css/
-│   │   └── style.css
-│   └── js/
-│       └── main.js
-└── instance/              # Database files (created automatically)
-```
 
-## License
 
-MIT License
 
