@@ -1,688 +1,383 @@
-# Import tools to build the web app
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file
 from flask_login import login_required, current_user
 from models import db, Transaction, Category, User
 from datetime import datetime, timedelta
 from utils import get_monthly_summary, get_category_breakdown, get_yearly_summary
-from prediction import predict_next_month_expense, get_expense_trend
+from prediction import prepare_training_data, predict_next_month_expense, get_expense_trend
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 import pandas as pd
-import numpy as np
-import json
-import os
-import io
+import io, json
 
-# Create a 'Blueprint' to organize the main routes of the app
 main_bp = Blueprint('main', __name__)
 
-# The starting page (Home)
+# --- HELPER LOGIC ---
+def get_date_context():
+    now = datetime.now()
+    prev = now.replace(day=1) - timedelta(days=1)
+    return now, prev
+
+# --- NAVIGATION ---
 @main_bp.route('/')
 def index():
-    # If the user is already logged in, send them to the dashboard
-    if current_user.is_authenticated:
-        return redirect(url_for('main.dashboard'))
-    # If not logged in then redirect them to login page
-    return redirect(url_for('auth.login'))
-
-# The main Dashboard page
+    return redirect(url_for('main.dashboard' if current_user.is_authenticated else 'auth.login'))
+#dashboard page
 @main_bp.route('/dashboard')
 @login_required
 def dashboard():
-    from prediction import prepare_training_data
-    from sklearn.linear_model import LinearRegression
-    from sklearn.ensemble import RandomForestRegressor
-    # Get current date
-    now = datetime.now()
-    
-    # Get the dictionary from the prediction model
-    raw_data = predict_next_month_expense(current_user.id)
-     # Initialize the variable at the top!
-    prediction_value = 0  
-
-    # Extract the actual number from the dictionary
-    if isinstance(raw_data, dict):
-        actual_number = raw_data.get('prediction', 0)
-        conf_level = raw_data.get('confidence', 'N/A')
-    else:
-        # If the model just returned a number directly
-        actual_number = raw_data if raw_data else 0
-        conf_level = "Normal"
-        prediction_value = {
-        "prediction": round(float(actual_number), 2),
-        "confidence": conf_level
-    }
-    # --- Rest of  existing logic ---
-    current_month = get_monthly_summary(current_user.id, now.year, now.month)
-    
-    if now.month == 1:
-        prev_month = get_monthly_summary(current_user.id, now.year - 1, 12)
-    else:
-        prev_month = get_monthly_summary(current_user.id, now.year, now.month - 1)
-    
-    category_breakdown = get_category_breakdown(current_user.id, now.year, now.month, 'expense')
-    category_labels = list(category_breakdown.keys()) if category_breakdown else []
-    category_values = list(category_breakdown.values()) if category_breakdown else []
-    
-    recent_transactions = Transaction.query.filter_by(user_id=current_user.id)\
-        .order_by(Transaction.date.desc(), Transaction.created_at.desc())\
-        .limit(10).all()
-    
-    trend_labels, trend_values = get_expense_trend(current_user.id, 6)
-    # 1. Prepare data for the models
-    X, y = prepare_training_data(current_user.id, 12)
-    
-    # Defaults value
-    lr_val = 0
-    rf_val = 0
-    final_pred = 0
-
-
-
-    if X is not None and len(X) >= 3:
-        # 2. Train and get Linear Regression result
-        lr_model = LinearRegression().fit(X, y)
-        lr_val = lr_model.predict([[X[-1][0] + 1]])[0]
-
-        # 3. Train and get Random Forest result
-        rf_model = RandomForestRegressor(n_estimators=100).fit(X, y)
-        rf_val = rf_model.predict([[X[-1][0] + 1]])[0]
-        
-        final_pred = (lr_val + rf_val) / 2
-
-    # 4. Create the dictionary with the names our HTML is looking for
-    prediction_data = {
-        "prediction": final_pred,
-        "lr_prediction": lr_val,
-        "rf_prediction": rf_val,
-       "confidence": "High" if (X is not None and len(X) > 5) else ("Low" if (X is not None and len(X) >= 3) else "No Data")
-}
-
-    return render_template('dashboard.html',
-                           next_month_pred=prediction_value, 
-                           # Now uses real AI data     
-                           prediction=prediction_data,
-                           current_month=current_month,
-                           prev_month=prev_month,
-                           category_breakdown=category_breakdown,
-                           category_labels=category_labels,
-                           category_values=category_values,
-                           recent_transactions=recent_transactions,
-                           trend_labels=trend_labels,
-                           trend_values=trend_values,
-                    
-                           )
-from flask import flash, redirect, url_for, current_app
-from models import db, User, Transaction # Ensure db and models are imported
-
-# Route to delete a user
-@main_bp.route('/del_user/<int:user_id>')
-def del_user(user_id):
-    user_to_delete = User.query.get_or_404(user_id)
-    db.session.delete(user_to_delete)
-    db.session.commit()
-    flash(f"User {user_to_delete.username} has been deleted.", "success")
-    return redirect(url_for('main.admin'))
-
-# Route to delete a single transaction
-@main_bp.route('/del_transaction/<int:t_id>')
-def del_transaction(t_id):
-    t_to_delete = Transaction.query.get_or_404(t_id)
-    db.session.delete(t_to_delete)
-    db.session.commit()
-    flash("Transaction deleted successfully.", "info")
-    return redirect(url_for('main.admin'))
-@main_bp.route('/admin')
-def admin():
-    from models import User, Transaction  # Add Transaction here
-    # Security Check: Only allow if the user is an admin
-    # Fetch data for the admin to see
-    all_users = User.query.all()
-    # Fetch all transactions to show in the table
-    all_transactions = Transaction.query.all()
-    total_users = len(all_users)
-
-    total_t = Transaction.query.count()# Total records in system
-
-    return render_template('admin.html', users=all_users,transactions=all_transactions, total_u=total_users, total_t=total_t)
-@main_bp.route('/download')
-@login_required
-def download():
-    return render_template('download.html')
-# The page that lists all transactions with filters
-
-@main_bp.route('/transactions')
-@login_required
-def transactions():
-    # Look at the URL to see if the user clicked any filters (type, category, dates)
-    transaction_type = request.args.get('type', 'all')
-    category_id = request.args.get('category', 'all')
-    start_date = request.args.get('start_date')
-    end_date = request.args.get('end_date')
-    
-    # Start a basic search for the current user's transactions
-    query = Transaction.query.filter_by(user_id=current_user.id)
-    
-    # If the user filtered by type (Income/Expense), add that to the search
-    if transaction_type != 'all':
-        query = query.filter_by(type=transaction_type)
-    
-    # If the user filtered by a specific category, add that to the search
-    if category_id != 'all':
-        query = query.filter_by(category_id=category_id)
-    
-    # If a start date was picked, only show things from that day onwards
-    if start_date:
-        query = query.filter(Transaction.date >= datetime.strptime(start_date, '%Y-%m-%d').date())
-    
-    # If an end date was picked, only show things before that day
-    if end_date:
-        query = query.filter(Transaction.date <= datetime.strptime(end_date, '%Y-%m-%d').date())
-    
-    # Finalize the search and sort by newest date first
-    transactions_list = query.order_by(Transaction.date.desc(), Transaction.created_at.desc()).all()
-    
-    # Get all categories so the filter dropdown has choices
-    categories = Category.query.order_by(Category.name).all()
-    
-    # Show the transactions page with the results and filters applied
-    return render_template('transactions.html',
-                           transactions=transactions_list,
-                           categories=categories,
-                           current_filters={
-                               'type': transaction_type,
-                               'category': category_id,
-                               'start_date': start_date,
-                               'end_date': end_date
-                           })
-
-# Page to add a new transaction
-@main_bp.route('/add_transaction', methods=['GET', 'POST'])
-@login_required
-def add_transaction():
-    # If the user clicked "Submit" (POST)
-    if request.method == 'POST':
-        # Get the info from the form
-        category_id = request.form.get('category_id')
-        transaction_type = request.form.get('type')
-        amount = request.form.get('amount')
-        description = request.form.get('description', '')
-        date = request.form.get('date')
-        
-        # Check if any main field is empty
-        if not category_id or not transaction_type or not amount or not date:
-            flash('All required fields must be filled.', 'danger')
-            return redirect(url_for('main.add_transaction'))
-        
-        try:
-            # Convert amount to a number
-            amount = float(amount)
-            # Make sure they didn't enter a negative number
-            if amount <= 0:
-                flash('Amount must be greater than 0.', 'danger')
-                return redirect(url_for('main.add_transaction'))
-            
-            # Turn the date string into a real date object
-            transaction_date = datetime.strptime(date, '%Y-%m-%d').date()
-            
-            # Create a new Transaction object with the user's data
-            transaction = Transaction(
-                user_id=current_user.id,
-                category_id=int(category_id),
-                type=transaction_type,
-                amount=amount,
-                description=description,
-                date=transaction_date
-            )
-            
-            # Save the new transaction to the database
-            db.session.add(transaction)
-            db.session.commit()
-            
-            flash('Transaction added successfully!', 'success')
-            return redirect(url_for('main.transactions'))
-            
-        except ValueError:
-            # Handle mistakes like typing letters in the amount box
-            flash('Invalid amount or date format.', 'danger')
-            return redirect(url_for('main.add_transaction'))
-        except Exception as e:
-            # If something else goes wrong, cancel the database save
-            db.session.rollback()
-            flash('An error occurred while adding the transaction.', 'danger')
-            return redirect(url_for('main.add_transaction'))
-    
-    # If they just opened the page (GET), show the blank form and categories
-    categories = Category.query.order_by(Category.name).all()
-    return render_template('add_transaction.html', categories=categories)
-
-# Page to edit an existing transaction
-@main_bp.route('/edit_transaction/<int:transaction_id>', methods=['GET', 'POST'])
-@login_required
-def edit_transaction(transaction_id):
-    # Find the specific transaction or show a 404 error if it doesn't exist
-    transaction = Transaction.query.get_or_404(transaction_id)
-    
-    # Security: make sure this transaction actually belongs to the logged-in user
-    if transaction.user_id != current_user.id:
-        flash('You do not have permission to edit this transaction.', 'danger')
-        return redirect(url_for('main.transactions'))
-    
-    # If the user saved changes (POST)
-    if request.method == 'POST':
-        category_id = request.form.get('category_id')
-        transaction_type = request.form.get('type')
-        amount = request.form.get('amount')
-        description = request.form.get('description', '')
-        date = request.form.get('date')
-        
-        # Make sure nothing is blank
-        if not category_id or not transaction_type or not amount or not date:
-            flash('All required fields must be filled.', 'danger')
-            return redirect(url_for('main.edit_transaction', transaction_id=transaction_id))
-        
-        try:
-            amount = float(amount)
-            if amount <= 0:
-                flash('Amount must be greater than 0.', 'danger')
-                return redirect(url_for('main.edit_transaction', transaction_id=transaction_id))
-            
-            transaction_date = datetime.strptime(date, '%Y-%m-%d').date()
-            
-            # Update the existing transaction with new info
-            transaction.category_id = int(category_id)
-            transaction.type = transaction_type
-            transaction.amount = amount
-            transaction.description = description
-            transaction.date = transaction_date
-            
-            # Save the updates
-            db.session.commit()
-            
-            flash('Transaction updated successfully!', 'success')
-            return redirect(url_for('main.transactions'))
-            
-        except ValueError:
-            flash('Invalid amount or date format.', 'danger')
-            return redirect(url_for('main.edit_transaction', transaction_id=transaction_id))
-        except Exception as e:
-            db.session.rollback()
-            flash('An error occurred while updating the transaction.', 'danger')
-            return redirect(url_for('main.edit_transaction', transaction_id=transaction_id))
-    
-    # If just viewing the edit page, show the form pre-filled with current data
-    categories = Category.query.order_by(Category.name).all()
-    return render_template('edit_transaction.html', transaction=transaction, categories=categories)
-
-# Route to delete a transaction
-@main_bp.route('/delete_transaction/<int:transaction_id>', methods=['POST'])
-@login_required
-def delete_transaction(transaction_id):
-    # Find the transaction
-    transaction = Transaction.query.get_or_404(transaction_id)
-    
-    # Make sure the user owns it
-    if transaction.user_id != current_user.id:
-        flash('You do not have permission to delete this transaction.', 'danger')
-        return redirect(url_for('main.transactions'))
-    
-    try:
-        # Remove it from the database
-        db.session.delete(transaction)
-        db.session.commit()
-        flash('Transaction deleted successfully!', 'success')
-    except Exception as e:
-        db.session.rollback()
-        flash('An error occurred while deleting the transaction.', 'danger')
-    
-    # Go back to the list of transactions
-    return redirect(url_for('main.transactions'))
-
-# Page for detailed financial reports
-@main_bp.route('/reports')
-@login_required
-def reports():
-    # Get the year and month the user wants to see (defaults to today)
-    year = request.args.get('year', datetime.now().year, type=int)
-    month = request.args.get('month', datetime.now().month, type=int)
-    
-    # If month is 0, it means the user wants to see the whole year
-    if month == 0:
-        # Create a blank summary
-        monthly_summary = {'income': 0, 'expense': 0, 'balance': 0, 'transactions': 0}
-        # Get data for the whole year
-        yearly_data = get_yearly_summary(current_user.id, year)
-        # Add up all 12 months
-        for m in range(1, 13):
-            monthly_summary['income'] += yearly_data[m]['income']
-            monthly_summary['expense'] += yearly_data[m]['expense']
-        monthly_summary['balance'] = monthly_summary['income'] - monthly_summary['expense']
-        
-        # Calculate category spending for the entire year
-        expense_breakdown = {}
-        income_breakdown = {}
-        for m in range(1, 13):
-            exp_break = get_category_breakdown(current_user.id, year, m, 'expense')
-            inc_break = get_category_breakdown(current_user.id, year, m, 'income')
-            for cat, amount in exp_break.items():
-                expense_breakdown[cat] = expense_breakdown.get(cat, 0) + amount
-            for cat, amount in inc_break.items():
-                income_breakdown[cat] = income_breakdown.get(cat, 0) + amount
-    else:
-        # Otherwise, just get data for one specific month
-        monthly_summary = get_monthly_summary(current_user.id, year, month)
-        expense_breakdown = get_category_breakdown(current_user.id, year, month, 'expense')
-        income_breakdown = get_category_breakdown(current_user.id, year, month, 'income')
-    
-    # Get data for the bar charts showing the whole year's trend
-    yearly_data = get_yearly_summary(current_user.id, year)
-    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    income_data = [yearly_data[m]['income'] for m in range(1, 13)]
-    expense_data = [yearly_data[m]['expense'] for m in range(1, 13)]
-    
-    # Prepare labels for the charts
-    expense_labels = list(expense_breakdown.keys()) if expense_breakdown else []
-    expense_values = list(expense_breakdown.values()) if expense_breakdown else []
-    
-    # Show the reports page with all the charts and numbers
-    return render_template('reports.html',
-                           monthly_summary=monthly_summary,
-                           expense_breakdown=expense_breakdown,
-                           expense_labels=expense_labels,
-                           expense_values=expense_values,
-                           income_breakdown=income_breakdown,
-                           months=months,
-                           income_data=income_data,
-                           expense_data=expense_data,
-                           selected_year=year,
-                           selected_month=month)
-
-# The Prediction page (AI features)
-@main_bp.route('/prediction')
-@login_required
-def prediction():
-    """Prediction page showing monthly expense predictions"""
-    # Import special AI tools here
     from prediction import prepare_training_data, predict_next_month_expense, get_expense_trend
     from sklearn.linear_model import LinearRegression
     from sklearn.ensemble import RandomForestRegressor
+
+    now = datetime.now()
     
-    # Get the AI's best guess for next month
-    next_month_pred = predict_next_month_expense(current_user.id)
+    # 1. Handle Prediction Values (Fixed to prevent NoneType error)
+    raw = predict_next_month_expense(current_user.id)
+    is_dict = isinstance(raw, dict)
     
-    # Look back at the last year (360 days) of transactions
-    end_date = datetime.now().date()
-    start_date = end_date - timedelta(days=12 * 30)
+    # Safely get the value first
+    if is_dict:
+        raw_prediction = raw.get('prediction')
+    else:
+        raw_prediction = raw
+
+    # Convert to float safely: if it's None or empty, default to 0.0
+    try:
+        if raw_prediction is None:
+            clean_prediction = 0.0
+        else:
+            clean_prediction = float(raw_prediction)
+    except (ValueError, TypeError):
+        clean_prediction = 0.0
+
+    p_val = {
+        "prediction": round(clean_prediction, 2),
+        "confidence": raw.get('confidence', 'Normal') if is_dict else "Normal"
+    }
+    # 2. Monthly Summaries
+    curr_m = get_monthly_summary(current_user.id, now.year, now.month)
+    prev_date = now.replace(day=1) - timedelta(days=1)
+    prev_m = get_monthly_summary(current_user.id, prev_date.year, prev_date.month)
     
-    # Get all expenses in that timeframe
-    transactions = Transaction.query.filter_by(user_id=current_user.id, type='expense')\
-        .filter(Transaction.date >= start_date, Transaction.date <= end_date)\
-        .order_by(Transaction.date).all()
+    # 3. Categories & Transactions
+    cats = get_category_breakdown(current_user.id, now.year, now.month, 'expense') or {}
+    recent = Transaction.query.filter_by(user_id=current_user.id)\
+        .order_by(Transaction.date.desc(), Transaction.created_at.desc()).limit(10).all()
+    t_labels, t_values = get_expense_trend(current_user.id, 6)
     
-    # Group the expenses by month (e.g., "2024-05": 500.00)
-    monthly_expenses = {}
-    for transaction in transactions:
-        month_key = f"{transaction.date.year}-{transaction.date.month:02d}"
-        monthly_expenses[month_key] = monthly_expenses.get(month_key, 0) + transaction.amount
-    
-    # Pick the last 6 months to show in a "recent" list
-    recent_data = []
-    recent_months_list = []
-    recent_amounts_list = []
-    sorted_keys = sorted(monthly_expenses.keys())
-    
-    for month_key in sorted_keys[-6:]:
-        recent_data.append({'month': month_key, 'amount': monthly_expenses[month_key]})
-        recent_months_list.append(month_key)
-        recent_amounts_list.append(monthly_expenses[month_key])
-    
-    # Prepare the data to "teach" the AI
+    # 4. AI Model Training (Fixed NameError)
     X, y = prepare_training_data(current_user.id, 12)
     
-    predictions_data = []
-    # If we have enough data (at least 3 months), train the AI
-    if X is not None and len(X) >= 3:
-        # Linear Regression (looks for a straight-line trend)
-        lr_model = LinearRegression()
-        lr_model.fit(X, y)
-        
-        # Random Forest (looks for complex patterns)
-        rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
-        rf_model.fit(X, y)
-        
-        # Predict the next 3 months
-        current_month_num = X[-1][0] if len(X) > 0 else 0
-        for i in range(1, 4):
-            month_num = current_month_num + i
-            lr_pred = lr_model.predict([[month_num]])[0]
-            rf_pred = rf_model.predict([[month_num]])[0]
-            # Average the two models for a safer guess
-            avg_pred = (lr_pred + rf_pred) / 2
-            
-            # Figure out the names of the future months
-            now = datetime.now()
-            future_date = now + timedelta(days=30 * i)
-            month_name = future_date.strftime('%B %Y')
-            
-            predictions_data.append({
-                'month': month_name,
-                'prediction': round(float(avg_pred), 2),
-                'lr_prediction': round(float(lr_pred), 2),
-                'rf_prediction': round(float(rf_pred), 2)
-            })
+    # Define data_count immediately after getting X
+    data_count = len(X) if X is not None else 0
+    lr_v, rf_v, final_p = 0, 0, 0
     
-    # Get overall trend data for the chart
-    trend_labels, trend_values = get_expense_trend(current_user.id, 12)
-    
-    # Format the labels and numbers specifically for the chart library
-    chart_labels = [item['month'] for item in recent_data]
-    chart_historical = [float(item['amount']) for item in recent_data]
-    chart_predictions = []
-    
-    # Add predicted months to the chart data
-    if predictions_data:
-        for pred in predictions_data:
-            chart_labels.append(pred['month'])
-            chart_predictions.append(float(pred['prediction']))
-    
-    # Show the prediction page with all the AI results
-    return render_template('prediction.html',
-                           next_month_pred=next_month_pred,
-                           recent_data=recent_data,
-                           recent_months=recent_months_list,
-                           recent_amounts=recent_amounts_list,
-                           predictions_data=predictions_data,
-                           chart_labels=chart_labels,
-                           chart_historical=chart_historical,
-                           chart_predictions=chart_predictions,
-                           trend_labels=trend_labels,
-                           trend_values=trend_values)
+    if data_count >= 3:
+        next_idx = [[X[-1][0] + 1]]
+        lr_v = LinearRegression().fit(X, y).predict(next_idx)[0]
+        rf_v = RandomForestRegressor(n_estimators=100).fit(X, y).predict(next_idx)[0]
+        final_p = (lr_v + rf_v) / 2
 
-# Route to download data as CSV or Excel
+    # 5. Build Prediction Data Dictionary
+    p_data = {
+        "prediction": round(float(final_p), 2), 
+        "lr_prediction": round(float(lr_v), 2), 
+        "rf_prediction": round(float(rf_v), 2),
+        "confidence": "High" if data_count > 5 else ("Low" if data_count >= 3 else "No Data")
+    }
+
+    return render_template('dashboard.html', next_month_pred=p_val, prediction=p_data,
+        current_month=curr_m, prev_month=prev_m, category_breakdown=cats,
+        category_labels=list(cats.keys()), category_values=list(cats.values()),
+        recent_transactions=recent, trend_labels=t_labels, trend_values=t_values)
+# --- TRANSACTION CRUD ---
+@main_bp.route('/transactions')
+@login_required
+def transactions():
+    # 1. Get filter values from the URL
+    t_type = request.args.get('type', 'all')
+    cat_id = request.args.get('category', 'all')
+    s_date = request.args.get('start_date', '')
+
+    # 2. Start the query
+    q = Transaction.query.filter_by(user_id=current_user.id)
+    
+    # 3. Apply filters
+    if t_type != 'all': q = q.filter_by(type=t_type)
+    if cat_id != 'all': q = q.filter_by(category_id=cat_id)
+    if s_date: q = q.filter(Transaction.date >= s_date)
+    
+    return render_template('transactions.html', 
+        transactions=q.order_by(Transaction.date.desc()).all(),
+        categories=Category.query.all(),
+        # This line fixes the error:
+        current_filters={'type': t_type, 'category': cat_id, 'start_date': s_date})
+#edit transaction
+@main_bp.route('/edit_transaction/<int:transaction_id>', methods=['GET', 'POST'])
+@login_required
+def edit_transaction(transaction_id):
+    # Use the name 'transaction_id' to match your HTML link
+    tx = Transaction.query.get_or_404(transaction_id)
+    
+    if tx.user_id != current_user.id:
+        return redirect(url_for('main.transactions'))
+
+    if request.method == 'POST':
+        try:
+            tx.amount = float(request.form['amount'])
+            tx.type = request.form['type']
+            tx.category_id = int(request.form['category_id'])
+            tx.date = datetime.strptime(request.form['date'], '%Y-%m-%d').date()
+            tx.description = request.form.get('description', '')
+            
+            db.session.commit()
+            flash('Updated successfully!', 'success')
+            return redirect(url_for('main.transactions'))
+        except Exception:
+            db.session.rollback()
+            flash('Error updating transaction', 'danger')
+
+    return render_template('edit_transaction.html', transaction=tx, categories=Category.query.all())
+#delete transaction
+@main_bp.route('/delete_transaction/<int:transaction_id>', methods=['POST', 'GET'])
+@login_required
+def delete_transaction(transaction_id):
+    tx = Transaction.query.get_or_404(transaction_id)
+    
+    # Check if the transaction belongs to the current user
+    if tx.user_id == current_user.id:
+        try:
+            db.session.delete(tx)
+            db.session.commit()
+            flash('Transaction deleted!', 'success')
+        except Exception:
+            db.session.rollback()
+            flash('Error deleting transaction.', 'danger')
+            
+    return redirect(url_for('main.transactions'))
+#add new trans
+@main_bp.route('/add_transaction', methods=['GET', 'POST'])
+@login_required
+def add_transaction():
+    if request.method == 'POST':
+        try:
+            tx = Transaction(user_id=current_user.id, amount=float(request.form['amount']),
+                             type=request.form['type'], category_id=int(request.form['category_id']),
+                             date=datetime.strptime(request.form['date'], '%Y-%m-%d').date(),
+                             description=request.form.get('description', ''))
+            db.session.add(tx); db.session.commit()
+            flash('Success!', 'success'); return redirect(url_for('main.transactions'))
+        except: flash('Error adding transaction', 'danger')
+    return render_template('add_transaction.html', categories=Category.query.all())
+
+
+# --- REPORTS & ANALYTICS ---
+@main_bp.route('/reports')
+@login_required
+def reports():
+    # Get year/month from URL, default to current date
+    y = request.args.get('year', datetime.now().year, type=int)
+    m = request.args.get('month', datetime.now().month, type=int)
+    
+    # Get summaries for the charts and tables
+    # If month is 0, logic in utils usually handles "Yearly View"
+    monthly_summary = get_monthly_summary(current_user.id, y, m)
+    expense_breakdown = get_category_breakdown(current_user.id, y, m, 'expense')
+    income_breakdown = get_category_breakdown(current_user.id, y, m, 'income')
+    
+    # Get full year data for the bar chart trend
+    yearly_data = get_yearly_summary(current_user.id, y)
+    months_labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    return render_template('reports.html',
+        monthly_summary=monthly_summary,
+        expense_breakdown=expense_breakdown,
+        income_breakdown=income_breakdown,
+        expense_labels=list(expense_breakdown.keys()),
+        expense_values=list(expense_breakdown.values()),
+        months=months_labels,
+        income_data=[yearly_data[i]['income'] for i in range(1, 13)],
+        expense_data=[yearly_data[i]['expense'] for i in range(1, 13)],
+        selected_year=y,
+        selected_month=m)
+# --- PREDICTION & AI ---
+@main_bp.route('/prediction')
+@login_required
+def prediction():
+    from prediction import prepare_training_data, predict_next_month_expense, get_expense_trend
+    from sklearn.linear_model import LinearRegression
+    from sklearn.ensemble import RandomForestRegressor
+
+    next_month_pred = predict_next_month_expense(current_user.id)
+    
+    # 1. Fetch & Group last 12 months of expenses
+    start_date = datetime.now().date() - timedelta(days=360)
+    txs = Transaction.query.filter_by(user_id=current_user.id, type='expense')\
+        .filter(Transaction.date >= start_date).order_by(Transaction.date).all()
+    
+    monthly_expenses = {}
+    for t in txs:
+        k = t.date.strftime('%Y-%m')
+        monthly_expenses[k] = monthly_expenses.get(k, 0) + t.amount
+    
+    # 2. Extract recent data (Last 6 months)
+    keys = sorted(monthly_expenses.keys())[-6:]
+    recent_data = [{'month': k, 'amount': monthly_expenses[k]} for k in keys]
+    
+    # 3. AI Training (Forecast next 3 months)
+    X, y = prepare_training_data(current_user.id, 12)
+    preds_data = []
+    
+    if X is not None and len(X) >= 3:
+        lr, rf = LinearRegression().fit(X, y), RandomForestRegressor(n_estimators=100).fit(X, y)
+        curr_idx = X[-1][0]
+        for i in range(1, 4):
+            m_idx = curr_idx + i
+            p_lr, p_rf = lr.predict([[m_idx]])[0], rf.predict([[m_idx]])[0]
+            f_month = (datetime.now() + timedelta(days=30 * i)).strftime('%B %Y')
+            preds_data.append({
+                'month': f_month, 'prediction': round((p_lr + p_rf) / 2, 2),
+                'lr_prediction': round(p_lr, 2), 'rf_prediction': round(p_rf, 2)
+            })
+
+    # 4. Chart Data Preparation
+    t_labels, t_vals = get_expense_trend(current_user.id, 12)
+    c_labels = [d['month'] for d in recent_data] + [p['month'] for p in preds_data]
+    c_hist = [float(d['amount']) for d in recent_data]
+    c_preds = [p['prediction'] for p in preds_data]
+
+    return render_template('prediction.html', next_month_pred=next_month_pred,
+        recent_data=recent_data, recent_months=[d['month'] for d in recent_data],
+        recent_amounts=[d['amount'] for d in recent_data], predictions_data=preds_data,
+        chart_labels=c_labels, chart_historical=c_hist, chart_predictions=c_preds,
+        trend_labels=t_labels, trend_values=t_vals)
+# --- ADMIN & MANAGEMENT ---
+@main_bp.route('/admin')
+@login_required
+def admin():
+    return render_template('admin.html', users=User.query.all(), 
+                           transactions=Transaction.query.all(), 
+                           total_u=User.query.count(), total_t=Transaction.query.count())
+@main_bp.route('/delete_user/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def del_user(user_id):
+    # Security: Ensure only admins or the owner can delete
+    if not current_user.is_admin and current_user.id != user_id:
+        return redirect(url_for('main.dashboard'))
+
+    try:
+        # Delete user's transactions first to avoid database errors
+        Transaction.query.filter_by(user_id=user_id).delete()
+        user = User.query.get(user_id)
+        if user:
+            db.session.delete(user)
+            db.session.commit()
+            
+        # If admin is deleting someone else, stay on admin page
+        if current_user.is_admin and current_user.id != user_id:
+            flash("User deleted successfully.", "success")
+            return redirect(url_for('main.admin'))
+            
+        # If user deleted themselves, log out
+        return redirect(url_for('auth.login'))
+    except:
+        db.session.rollback()
+        return redirect(url_for('main.admin'))
+@main_bp.route('/admin/edit_user/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def edit_user(user_id):
+    # Only allow access if the current user is an admin
+    if current_user.is_admin:
+        return redirect(url_for('main.edit_user.html'))
+        
+    user = User.query.get_or_404(user_id)
+    
+    if request.method == 'POST':
+        user.username = request.form.get('username')
+        user.email = request.form.get('email')
+        user.is_admin = 'is_admin' in request.form
+        db.session.commit()
+        flash(f"User {user.username} updated!", "success")
+        return redirect(url_for('main.admin'))
+
+    return render_template('edit_user.html', user=user)
+@main_bp.route('/del_transaction/<int:t_id>', methods=['GET', 'POST'])
+@login_required
+def del_transaction(t_id):
+    # 1. Fetch the transaction using the label 't_id'
+    tx = Transaction.query.get_or_404(t_id)
+    
+    # 2. Security Check
+    if tx.user_id == current_user.id:
+        try:
+            db.session.delete(tx)
+            db.session.commit()
+            flash('Transaction deleted!', 'success')
+        except:
+            db.session.rollback()
+            
+    return redirect(url_for('main.transactions'))
+# --- DATA & EXPORT ---
 @main_bp.route('/export')
 @login_required
 def export():
-    # Check if user wants 'csv' or 'excel'
-    format_type = request.args.get('format', 'csv')
-    
-    # Get all of the user's transactions
-    transactions = Transaction.query.filter_by(user_id=current_user.id)\
-        .order_by(Transaction.date.desc()).all()
-    
-    # Turn the database objects into a simple list of dictionaries
-    data = []
-    for t in transactions:
-        data.append({
-            'Date': t.date.strftime('%Y-%m-%d'),
-            'Type': t.type.capitalize(),
-            'Category': t.category.name,
-            'Amount': t.amount,
-            'Description': t.description or ''
-        })
-    
-    # Use Pandas to create a data table
-    df = pd.DataFrame(data)
-    
-    # If CSV format
-    if format_type == 'csv':
-        output = io.StringIO()
-        df.to_csv(output, index=False)
-        output.seek(0)
-        return send_file(
-            io.BytesIO(output.getvalue().encode()),
-            mimetype='text/csv',
-            as_attachment=True,
-            download_name=f'finance_export_{datetime.now().strftime("%Y%m%d")}.csv'
-        )
-    # If Excel format
-    elif format_type == 'excel':
-        output = io.BytesIO()
-        with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            df.to_excel(writer, index=False, sheet_name='Transactions')
-        output.seek(0)
-        return send_file(
-            output,
-            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            as_attachment=True,
-            download_name=f'finance_export_{datetime.now().strftime("%Y%m%d")}.xlsx'
-        )
-    
-    flash('Invalid export format.', 'danger')
-    return redirect(url_for('main.dashboard'))
+    txs = Transaction.query.filter_by(user_id=current_user.id).all()
+    df = pd.DataFrame([{'Date': t.date, 'Type': t.type, 'Amount': t.amount, 'Category': t.category.name} for t in txs])
+    out = io.BytesIO()
+    if request.args.get('format') == 'excel':
+        df.to_excel(out, index=False)
+        mtype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    else:
+        out.write(df.to_csv(index=False).encode())
+        mtype = 'text/csv'
+    out.seek(0)
+    return send_file(out, mimetype=mtype, as_attachment=True, download_name=f"export.{request.args.get('format', 'csv')}")
 
-# Route to create a JSON backup file
 @main_bp.route('/backup')
 @login_required
 def backup():
-    """Create a backup of user's transactions"""
-    transactions = Transaction.query.filter_by(user_id=current_user.id).all()
-    
-    # Create a dictionary with user info and all their transactions
-    backup_data = {
-        'user_id': current_user.id,
-        'username': current_user.username,
-        'backup_date': datetime.now().isoformat(),
-        'transactions': []
-    }
-    
-    # Add each transaction to the backup list
-    for t in transactions:
-        backup_data['transactions'].append({
-            'category': t.category.name,
-            'type': t.type,
-            'amount': float(t.amount),
-            'description': t.description,
-            'date': t.date.isoformat()
-        })
-    
-    # Create the JSON file in memory
-    output = io.BytesIO()
-    output.write(json.dumps(backup_data, indent=2).encode())
-    output.seek(0)
-    
-    # Send the file to the user's browser for download
-    return send_file(
-        output,
-        mimetype='application/json',
-        as_attachment=True,
-        download_name=f'finance_backup_{current_user.username}_{datetime.now().strftime("%Y%m%d")}.json'
-    )
+    txs = Transaction.query.filter_by(user_id=current_user.id).all()
+    data = {"user": current_user.username, "data": [{"amt": float(t.amount), "date": t.date.isoformat(), "type": t.type, "cat": t.category.name} for t in txs]}
+    return send_file(io.BytesIO(json.dumps(data).encode()), as_attachment=True, download_name="backup.json")
+# --- DATA MANAGEMENT (DOWNLOAD & RESTORE) ---
+@main_bp.route('/download')
+@login_required
+def download():
+    # Simply renders the page where the export buttons (CSV/Excel/JSON) are
+    return render_template('download.html')
 
-# Route to upload and restore data from a backup file
 @main_bp.route('/restore', methods=['GET', 'POST'])
 @login_required
 def restore():
-    """Restore transactions from backup file"""
-    # If just visiting the page, show the upload form
-    if request.method == 'GET':
-        return render_template('restore.html')
-    
-    # If they uploaded a file
-    if 'backup_file' not in request.files:
-        flash('No file selected.', 'danger')
-        return redirect(url_for('main.restore'))
-    
-    file = request.files['backup_file']
-    if file.filename == '':
-        flash('No file selected.', 'danger')
-        return redirect(url_for('main.restore'))
-    
-    try:
-        # Read the JSON file
-        backup_data = json.loads(file.read().decode('utf-8'))
-        
-        # Check if it's a valid backup file
-        if 'transactions' not in backup_data:
-            flash('Invalid backup file format.', 'danger')
+    if request.method == 'POST':
+        file = request.files.get('backup_file')
+        if not file:
+            flash('No file selected', 'danger')
             return redirect(url_for('main.restore'))
         
-        # Get a list of all existing categories to match IDs
-        categories = {cat.name: cat.id for cat in Category.query.all()}
-        
-        restored_count = 0
-        for t_data in backup_data['transactions']:
-            # If a category in the backup doesn't exist in the database, create it
-            if t_data['category'] not in categories:
-                new_category = Category(name=t_data['category'])
-                db.session.add(new_category)
-                db.session.flush() # Get an ID for the new category immediately
-                categories[t_data['category']] = new_category.id
-            
-            # Avoid adding the exact same transaction twice
-            existing = Transaction.query.filter_by(
-                user_id=current_user.id,
-                category_id=categories[t_data['category']],
-                type=t_data['type'],
-                amount=t_data['amount'],
-                date=datetime.fromisoformat(t_data['date']).date()
-            ).first()
-            
-            # If it's a new transaction, add it to the list to be saved
-            if not existing:
-                transaction = Transaction(
-                    user_id=current_user.id,
-                    category_id=categories[t_data['category']],
-                    type=t_data['type'],
-                    amount=t_data['amount'],
-                    description=t_data.get('description', ''),
-                    date=datetime.fromisoformat(t_data['date']).date()
-                )
-                db.session.add(transaction)
-                restored_count += 1
-        
-        # Save everything to the database at once
-        db.session.commit()
-        flash(f'Successfully restored {restored_count} transactions from backup.', 'success')
-        return redirect(url_for('main.transactions'))
-        
-    except json.JSONDecodeError:
-        flash('Invalid JSON file format.', 'danger')
-        return redirect(url_for('main.restore'))
-    except Exception as e:
-        db.session.rollback()
-        flash(f'Error restoring backup: {str(e)}', 'danger')
-        return redirect(url_for('main.restore'))
+        try:
+            data = json.loads(file.read().decode('utf-8'))
+            cats = {c.name: c.id for c in Category.query.all()}
+            count = 0
 
-# A special route that returns raw data for charts (used by JavaScript)
-@main_bp.route('/api/chart_data')
-@login_required
-def chart_data():
-    """API endpoint for chart data"""
-    chart_type = request.args.get('type', 'monthly')
-    
-    # If the chart needs monthly category info
-    if chart_type == 'monthly':
-        now = datetime.now()
-        breakdown = get_category_breakdown(current_user.id, now.year, now.month, 'expense')
-        return jsonify({
-            'labels': list(breakdown.keys()),
-            'values': list(breakdown.values())
-        })
-    # If the chart needs the 6-month trend line
-    elif chart_type == 'trend':
-        labels, values = get_expense_trend(current_user.id, 6)
-        return jsonify({
-            'labels': labels,
-            'values': values
-        })
-    
-    return jsonify({'error': 'Invalid chart type'}), 400
+            for t in data.get('transactions', []):
+                # Only add if it doesn't already exist
+                if not Transaction.query.filter_by(user_id=current_user.id, amount=t['amount'], date=datetime.fromisoformat(t['date']).date()).first():
+                    new_tx = Transaction(
+                        user_id=current_user.id,
+                        category_id=cats.get(t['category'], 1), # Default to first category if missing
+                        type=t['type'], amount=t['amount'],
+                        description=t.get('description', ''),
+                        date=datetime.fromisoformat(t['date']).date()
+                    )
+                    db.session.add(new_tx)
+                    count += 1
+            
+            db.session.commit()
+            flash(f'Restored {count} transactions!', 'success')
+            return redirect(url_for('main.transactions'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Restore failed: {str(e)}', 'danger')
 
+    return render_template('download.html')

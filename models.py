@@ -25,6 +25,10 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     # the date the user joined, set automatically
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    # --- Admin ---
+    is_admin = db.Column(db.Boolean, default=False)
+    def __repr__(self):
+        return f'<User {self.username}>'
     
     # connects this user to all their transactions
     transactions = db.relationship('Transaction', backref='user', lazy=True, cascade='all, delete-orphan')
